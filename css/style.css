@@ -2781,3 +2781,24 @@ tr.row-vencido {
 .servico-card-icon .icones-1 svg, .categoria-icon .icones-1 svg { width: 24px; height: 24px; }
 .servico-card-icon .icones-2 svg { width: 18px; height: 18px; }
 .servico-card-icon .icones-3 svg { width: 13px; height: 13px; }
+
+/* ---------- Clientes (painel) ---------- */
+.clientes-toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+.clientes-toolbar .form-input { flex: 1; min-width: 200px; }
+.clientes-total { color: var(--text-secondary, #aaa); font-size: 0.85rem; }
+.clientes-vazio { color: var(--text-secondary, #aaa); padding: 20px 0; }
+.clientes-lista { display: flex; flex-direction: column; gap: 10px; }
+.cliente-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 16px; }
+.cliente-card[open] { border-color: rgba(var(--accent-rgb), 0.5); }
+.cliente-card summary { cursor: pointer; display: flex; flex-direction: column; gap: 2px; list-style: none; }
+.cliente-card summary::-webkit-details-marker { display: none; }
+.cliente-nome { font-weight: 600; color: var(--text-primary); }
+.cliente-meta { font-size: 0.8rem; color: var(--text-secondary, #aaa); }
+.badge-niver { font-size: 0.75rem; color: var(--accent-light); margin-left: 6px; }
+.cliente-corpo { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
+.cliente-corpo label { display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; color: var(--text-secondary, #aaa); }
+.cliente-corpo h4 { font-size: 0.85rem; margin: 6px 0 0; color: var(--text-primary); }
+.cliente-acoes { display: flex; gap: 8px; }
+.cliente-hist { list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: var(--text-secondary, #aaa); display: flex; flex-direction: column; gap: 4px; }
+.cliente-hist span { color: var(--text-primary); margin-right: 4px; }
+.cliente-hist em { font-style: normal; font-size: 0.7rem; opacity: 0.8; margin-left: 4px; text-transform: capitalize; }

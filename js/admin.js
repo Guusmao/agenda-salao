@@ -10,7 +10,7 @@
   let statAgendados, statRealizados, statCancelados, statHoje;
   let statRealizadosMes, statAgendadosMes, statCanceladosMes, statFaturamento;
   let tableView, crmView, cancelledView;
-  let btnViewTable, btnViewCRM, btnViewCancelled;
+  let btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes, clientesView;
   let cancelledGrid, cancelledEmptyState;
   let modalBookingId, modalTitle, cardAgendadosTotal;
   let btnBloquearHorario, adminHorariosContainer, adminTimeSlotsGrid, btnCloseAdminHorarios;
@@ -50,6 +50,8 @@
     btnViewTable = document.getElementById('btnViewTable');
     btnViewCRM = document.getElementById('btnViewCRM');
     btnViewCancelled = document.getElementById('btnViewCancelled');
+    btnViewClientes = document.getElementById('btnViewClientes');
+    clientesView = document.getElementById('clientesView');
     cancelledGrid = document.getElementById('cancelledGrid');
     cancelledEmptyState = document.getElementById('cancelledEmptyState');
 
@@ -273,6 +275,9 @@
     btnViewTable.addEventListener('click', () => switchView('table'));
     btnViewCRM.addEventListener('click', () => switchView('crm'));
     btnViewCancelled.addEventListener('click', () => switchView('cancelled'));
+    if (btnViewClientes) btnViewClientes.addEventListener('click', () => switchView('clientes'));
+    const busca = document.getElementById('clientesBusca');
+    if (busca) busca.addEventListener('input', renderClientes);
     
     // --- CRM Drag & Drop Events ---
     initCRMDragEvents();
@@ -422,7 +427,7 @@
     if (!tableView || !crmView || !cancelledView) return;
 
     // Reset buttons
-    [btnViewTable, btnViewCRM, btnViewCancelled].forEach(btn => {
+    [btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes].forEach(btn => {
       if (btn) btn.classList.remove('active');
     });
 
@@ -430,6 +435,7 @@
     tableView.style.display = 'none';
     crmView.style.display = 'none';
     cancelledView.style.display = 'none';
+    if (clientesView) clientesView.style.display = 'none';
 
     if (view === 'table') {
       tableView.style.display = 'block';
@@ -442,6 +448,106 @@
       cancelledView.style.display = 'block';
       if (btnViewCancelled) btnViewCancelled.classList.add('active');
       renderCancelled(currentAgendamentos);
+    } else if (view === 'clientes' && clientesView) {
+      clientesView.style.display = 'block';
+      btnViewClientes.classList.add('active');
+      carregarClientes();
+    }
+  }
+
+  // ==========================================
+  // Clientes: histórico, aniversário e observações
+  // ==========================================
+  let listaClientes = [];
+  const soDigitos = t => String(t || '').replace(/\D/g, '');
+
+  async function carregarClientes() {
+    const lista = document.getElementById('clientesLista');
+    lista.innerHTML = '<p class="clientes-vazio">Carregando...</p>';
+    try {
+      const [{ data: cadastros, error: e1 }, { data: atendimentos, error: e2 }] = await Promise.all([
+        window.db.from('clientes').select('telefone, nome, aniversario, observacoes'),
+        window.db.from('agendamentos').select('telefone, nome, data, horario, servico, profissional, status')
+          .neq('status', 'bloqueado').order('data', { ascending: false })
+      ]);
+      if (e1 || e2) throw (e1 || e2);
+
+      // Junta pelo telefone (só os números), porque a mesma cliente pode ter digitado com ou sem máscara
+      const porTel = new Map();
+      (cadastros || []).forEach(c => porTel.set(soDigitos(c.telefone), { ...c, historico: [] }));
+      (atendimentos || []).forEach(a => {
+        const k = soDigitos(a.telefone);
+        if (!k) return;
+        if (!porTel.has(k)) porTel.set(k, { telefone: a.telefone, nome: a.nome, aniversario: null, observacoes: '', historico: [], semCadastro: true });
+        porTel.get(k).historico.push(a);
+      });
+      listaClientes = [...porTel.values()].map(c => {
+        const feitos = c.historico.filter(a => a.status === 'realizado');
+        return { ...c, visitas: feitos.length, ultima: feitos[0] ? feitos[0].data : null };
+      }).sort((a, b) => (b.ultima || '').localeCompare(a.ultima || '') || a.nome.localeCompare(b.nome));
+      renderClientes();
+    } catch (err) {
+      lista.innerHTML = '<p class="clientes-vazio">Não foi possível carregar as clientes.</p>';
+    }
+  }
+
+  function diasDesde(dataStr) {
+    if (!dataStr) return null;
+    return Math.floor((new Date(getLocalDateString() + 'T00:00:00') - new Date(dataStr + 'T00:00:00')) / 86400000);
+  }
+
+  function renderClientes() {
+    const lista = document.getElementById('clientesLista');
+    const termo = (document.getElementById('clientesBusca').value || '').trim().toLowerCase();
+    const termoNum = soDigitos(termo);
+    const filtradas = listaClientes.filter(c => !termo ||
+      c.nome.toLowerCase().includes(termo) || (termoNum && soDigitos(c.telefone).includes(termoNum)));
+    document.getElementById('clientesTotal').textContent = `${filtradas.length} cliente${filtradas.length === 1 ? '' : 's'}`;
+
+    if (!filtradas.length) {
+      lista.innerHTML = '<p class="clientes-vazio">Nenhuma cliente encontrada.</p>';
+      return;
+    }
+    const hojeMD = getLocalDateString().slice(5);
+    lista.innerHTML = filtradas.map((c, i) => {
+      const dias = diasDesde(c.ultima);
+      const niver = c.aniversario && c.aniversario.slice(5) === hojeMD;
+      const hist = c.historico.slice(0, 10).map(a => `
+        <li><span>${formatDateBR(a.data)} ${escapeHTML(a.horario)}</span> ${escapeHTML(a.servico)}${a.profissional ? ` · ${escapeHTML(a.profissional)}` : ''} <em class="st-${escapeHTML(a.status)}">${escapeHTML(a.status.replace('_', ' '))}</em></li>`).join('');
+      return `
+        <details class="cliente-card" data-i="${listaClientes.indexOf(c)}">
+          <summary>
+            <span class="cliente-nome">${escapeHTML(c.nome)}${niver ? ' <span class="badge-niver">🎂 aniversário hoje</span>' : ''}</span>
+            <span class="cliente-meta">${escapeHTML(c.telefone)} · ${c.visitas} visita${c.visitas === 1 ? '' : 's'}${dias !== null ? ` · última há ${dias} dia${dias === 1 ? '' : 's'}` : ''}</span>
+          </summary>
+          <div class="cliente-corpo">
+            <label>Aniversário <input type="date" class="form-input cli-niver" value="${escapeHTML(c.aniversario || '')}"></label>
+            <label>Observações (alergias, preferências) <textarea class="form-input cli-obs" rows="2">${escapeHTML(c.observacoes || '')}</textarea></label>
+            <div class="cliente-acoes">
+              <button type="button" class="btn btn-primary btn-sm cli-salvar">Salvar</button>
+              <a class="btn btn-outline btn-sm" target="_blank" rel="noopener" href="https://wa.me/55${soDigitos(c.telefone)}">WhatsApp</a>
+            </div>
+            <h4>Histórico</h4>
+            <ul class="cliente-hist">${hist || '<li>Sem atendimentos ainda.</li>'}</ul>
+          </div>
+        </details>`;
+    }).join('');
+
+    lista.querySelectorAll('.cli-salvar').forEach(btn => btn.addEventListener('click', () => {
+      const card = btn.closest('.cliente-card');
+      salvarCliente(listaClientes[+card.dataset.i], card.querySelector('.cli-niver').value || null, card.querySelector('.cli-obs').value.trim());
+    }));
+  }
+
+  async function salvarCliente(c, aniversario, observacoes) {
+    try {
+      const { error } = await window.db.from('clientes')
+        .upsert({ telefone: c.telefone, nome: c.nome, aniversario, observacoes, updated_at: new Date().toISOString() }, { onConflict: 'telefone' });
+      if (error) throw error;
+      Object.assign(c, { aniversario, observacoes, semCadastro: false });
+      showToast('Cliente salva!', 'success');
+    } catch (err) {
+      showToast('Erro ao salvar a cliente.', 'error');
     }
   }
 

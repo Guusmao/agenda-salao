@@ -295,6 +295,9 @@
               <button class="btn-toggle" id="btnViewCancelled">
                 <span class="icon">🚫</span> Cancelados
               </button>
+              <button class="btn-toggle" id="btnViewClientes">
+                <span class="icon">👩</span> Clientes
+              </button>
             </div>
 
             <!-- Toolbar -->
@@ -405,6 +408,15 @@
                 <p>Nenhum agendamento cancelado.</p>
               </div>
             </div> <!-- Fim cancelledView -->
+
+            <!-- Clientes: histórico, aniversário e observações -->
+            <div class="clientes-view" id="clientesView" style="display: none;">
+              <div class="clientes-toolbar">
+                <input type="search" id="clientesBusca" class="form-input" placeholder="Buscar por nome ou telefone">
+                <span class="clientes-total" id="clientesTotal"></span>
+              </div>
+              <div class="clientes-lista" id="clientesLista"></div>
+            </div>
 
           </div>
         </div>
