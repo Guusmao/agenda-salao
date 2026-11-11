@@ -30,9 +30,9 @@
 
   // --- Init ---
   function init() {
+    initServiceSelection();
     setMinDate();
     renderTimeSlots();
-    initServiceSelection();
     initProSelection();
     checkAuth(); // Check if already logged in
 
@@ -65,17 +65,11 @@
 
   // --- Service Selection Card Logic ---
   function initServiceSelection() {
-    const serviceItems = document.querySelectorAll('#serviceSelection .service-item');
-    serviceItems.forEach(item => {
-      item.addEventListener('click', () => {
-        serviceItems.forEach(i => i.classList.remove('selected'));
-        item.classList.add('selected');
-        servicoSelect.value = item.dataset.value;
-        // A duração muda quais horários cabem
-        selectedSlot = null;
-        horarioHidden.value = '';
-        renderTimeSlots();
-      });
+    CFG.ligarSelecao('serviceSelection', servicoSelect, () => {
+      // A duração muda quais horários cabem
+      selectedSlot = null;
+      horarioHidden.value = '';
+      renderTimeSlots();
     });
   }
 
@@ -113,9 +107,7 @@
     const today = getLocalDateString();
     dataInput.setAttribute('min', today);
     dataInput.value = today;
-    servicoSelect.value = '';
-    const serviceItems = document.querySelectorAll('#serviceSelection .service-item');
-    serviceItems.forEach(i => i.classList.remove('selected'));
+    CFG.marcarServico('serviceSelection', '');
     onDateChange();
   }
 
@@ -378,8 +370,7 @@
 
       // Reset form
       form.reset();
-      const serviceItems = document.querySelectorAll('#serviceSelection .service-item');
-      serviceItems.forEach(i => i.classList.remove('selected'));
+      CFG.marcarServico('serviceSelection', '');
       document.querySelectorAll('#proSelection .service-item').forEach(i => i.classList.remove('selected'));
       profissionalHidden.value = '';
       selectedSlot = null;

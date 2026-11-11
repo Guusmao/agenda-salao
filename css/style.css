@@ -2802,3 +2802,21 @@ tr.row-vencido {
 .cliente-hist { list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: var(--text-secondary, #aaa); display: flex; flex-direction: column; gap: 4px; }
 .cliente-hist span { color: var(--text-primary); margin-right: 4px; }
 .cliente-hist em { font-style: normal; font-size: 0.7rem; opacity: 0.8; margin-left: 4px; text-transform: capitalize; }
+
+/* ---------- Comprimento do cabelo (preço por variação) ---------- */
+.variacao-box { margin-top: 12px; }
+.variacao-titulo { display: block; font-size: 0.8rem; color: var(--text-secondary, #aaa); margin-bottom: 8px; }
+.variacao-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.variacao-chip { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 14px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--text-primary); font: inherit; font-size: 0.85rem; cursor: pointer; }
+.variacao-chip small { color: var(--accent); font-weight: 700; }
+.variacao-chip.selected { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.12); }
+
+/* ---------- Serviços e preços (painel) ---------- */
+.servicos-admin-ajuda { color: var(--text-secondary, #aaa); font-size: 0.85rem; margin-bottom: 14px; }
+#servicosAdminLista { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.sv-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sv-var { display: grid; grid-template-columns: 1fr 110px 36px; gap: 8px; margin-top: 6px; }
+.sv-var-del { background: none; border: 1px solid rgba(255,255,255,0.15); color: var(--text-secondary, #aaa); border-radius: 8px; font-size: 1.1rem; cursor: pointer; }
+.sv-checks { display: flex; flex-direction: column; gap: 6px; }
+.sv-checks label { flex-direction: row !important; align-items: center; gap: 8px !important; }

@@ -16,8 +16,8 @@ window.APP_CONFIG = {
   logoHero: 'img/logo-aline-ramos.png?v=1',     // Coloque o logo do salão em img/ e troque aqui
   corDestaque: '#d4ab57',               // Cor dos botões, preços e detalhes (formato #rrggbb)
   tituloPagina: 'Aline Ramos | Agende seu horário',
-  descricaoPagina: 'Agende seu horário online: cabelo, unhas, sobrancelha e muito mais.',
-  textoCatalogo: 'Cabelo, unhas e beleza. Confira tudo o que oferecemos.',
+  descricaoPagina: 'Aline Ramos, especialista em corte feminino. Agende seu horário online.',
+  textoCatalogo: 'Corte, cor, luzes e tratamentos. Confira tudo o que oferecemos.',
 
   // --- Profissionais ---
   // Com 2 ou mais, a cliente escolhe com quem quer ser atendida e cada uma tem a própria agenda.
@@ -38,36 +38,22 @@ window.APP_CONFIG = {
   mensagemLembrete: 'Olá, {nome}! Passando para lembrar do seu horário no {salao}: {servico} em {data} às {horario}. Se não puder vir, é só responder esta mensagem para remarcar. Até lá!',
 
   // --- Serviços ---
-  // nome:     como aparece na hora de agendar
-  // titulo:   como aparece na página "Nossos Serviços" (opcional, usa "nome" se faltar)
-  // duracao:  minutos que o serviço ocupa na agenda
-  // aPartirDe: true mostra "a partir de R$ X"
+  // A lista de verdade fica no banco (tabela "servicos") e a dona edita pelo painel.
+  // Esta aqui só aparece se o banco não responder.
   categorias: [
-    {
-      nome: 'Cabelo', icone: 'secador', classe: '',
-      servicos: [
-        { valor: 'Corte Feminino', nome: 'Corte Feminino', icone: 'tesoura', preco: 60, duracao: 60, desc: 'Corte com lavagem e finalização' },
-        { valor: 'Escova', nome: 'Escova', icone: 'secador', preco: 45, duracao: 45, aPartirDe: true, desc: 'Escova modelada ou lisa' },
-        { valor: 'Hidratação', nome: 'Hidratação', icone: 'gota', preco: 70, duracao: 60, desc: 'Tratamento com máscara e escova' },
-        { valor: 'Coloração', nome: 'Coloração', icone: 'pincel', preco: 120, duracao: 120, aPartirDe: true, desc: 'Cor raiz ou global' },
-        { valor: 'Progressiva', nome: 'Progressiva', icone: 'chama', preco: 180, duracao: 180, aPartirDe: true, desc: 'Alisamento e redução de volume' }
-      ]
-    },
-    {
-      nome: 'Unhas', icone: 'esmalte', classe: '',
-      servicos: [
-        { valor: 'Manicure', nome: 'Manicure', icone: 'esmalte', preco: 30, duracao: 40, desc: 'Cutilagem e esmaltação' },
-        { valor: 'Pedicure', nome: 'Pedicure', icone: 'esmalte', preco: 35, duracao: 45, desc: 'Cutilagem e esmaltação dos pés' },
-        { valor: 'Pé e Mão', nome: 'Pé e Mão', icone: 'esmalte', preco: 60, duracao: 80, desc: 'Manicure e pedicure juntas' },
-        { valor: 'Alongamento em Gel', nome: 'Alongamento em Gel', icone: 'brilho', preco: 150, duracao: 150, desc: 'Alongamento com acabamento natural' }
-      ]
-    },
-    {
-      nome: 'Rosto', icone: 'olho', classe: '',
-      servicos: [
-        { valor: 'Design de Sobrancelha', nome: 'Design de Sobrancelha', icone: 'olho', preco: 35, duracao: 30, desc: 'Design com pinça e linha' },
-        { valor: 'Sobrancelha com Henna', nome: 'Sobrancelha com Henna', icone: 'olho', preco: 50, duracao: 45, desc: 'Design e preenchimento com henna' }
-      ]
-    }
+    { nome: 'Corte', icone: 'tesoura', classe: '', servicos: [
+      { valor: 'Corte', nome: 'Corte', icone: 'tesoura', preco: 390, duracao: 120, desc: 'Consultoria de perfil, lavagem especial, corte e escova de finalização' } ] },
+    { nome: 'Cor e Luzes', icone: 'pincel', classe: '', servicos: [
+      { valor: 'Coloração', nome: 'Coloração', icone: 'pincel', preco: 230, aPartirDe: true, duracao: 180, desc: 'Varia com a quantidade de tinta (1 tubo: R$ 210)' },
+      { valor: 'Iluminados', nome: 'Iluminados', icone: 'brilho', duracao: 180, desc: 'Mechas e iluminação',
+        variacoes: [{ rotulo: 'Frame', preco: 660 }, { rotulo: 'Contorno e topo', preco: 940 }, { rotulo: 'Médio', preco: 1050 }, { rotulo: 'Longo', preco: 1300 }, { rotulo: 'Extra longo', preco: 2040 }] } ] },
+    { nome: 'Tratamentos', icone: 'gota', classe: '', servicos: [
+      { valor: 'Banho de Pó de Pérola', nome: 'Banho de Pó de Pérola', icone: 'gota', duracao: 300, desc: 'Cabelo com muito volume: taxa a partir de R$ 50',
+        variacoes: [{ rotulo: 'Curto', preco: 660 }, { rotulo: 'Médio', preco: 770 }, { rotulo: 'Longo', preco: 880 }, { rotulo: 'Extra longo', preco: 990 }] },
+      { valor: 'Tratamento Capilar', nome: 'Tratamento Capilar', icone: 'gota', duracao: 120, desc: 'Valor varia com o volume do cabelo',
+        variacoes: [{ rotulo: 'Curto', preco: 220 }, { rotulo: 'Médio', preco: 280 }, { rotulo: 'Longo', preco: 330 }, { rotulo: 'Extra longo', preco: 390 }] } ] },
+    { nome: 'Escovas', icone: 'secador', classe: '', servicos: [
+      { valor: 'Escova', nome: 'Escova', icone: 'secador', duracao: 60, desc: 'Adicional de chapinha ou babyliss: R$ 20',
+        variacoes: [{ rotulo: 'Curto', preco: 80 }, { rotulo: 'Médio', preco: 90 }, { rotulo: 'Longo', preco: 100 }, { rotulo: 'Extra longo', preco: 110 }] } ] }
   ]
 };

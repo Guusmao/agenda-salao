@@ -298,6 +298,9 @@
               <button class="btn-toggle" id="btnViewClientes">
                 <span class="icon">👩</span> Clientes
               </button>
+              <button class="btn-toggle" id="btnViewServicos">
+                <span class="icon">✂️</span> Serviços e preços
+              </button>
             </div>
 
             <!-- Toolbar -->
@@ -408,6 +411,13 @@
                 <p>Nenhum agendamento cancelado.</p>
               </div>
             </div> <!-- Fim cancelledView -->
+
+            <!-- Serviços: preço, duração e comissão editáveis -->
+            <div class="servicos-admin-view" id="servicosAdminView" style="display: none;">
+              <p class="servicos-admin-ajuda">Mudou o preço, o tempo ou a comissão? Edite aqui e salve. Vale para os próximos agendamentos.</p>
+              <div id="servicosAdminLista"></div>
+              <button type="button" class="btn btn-outline btn-sm" id="btnNovoServico">+ Novo serviço</button>
+            </div>
 
             <!-- Clientes: histórico, aniversário e observações -->
             <div class="clientes-view" id="clientesView" style="display: none;">

@@ -10,7 +10,7 @@
   let statAgendados, statRealizados, statCancelados, statHoje;
   let statRealizadosMes, statAgendadosMes, statCanceladosMes, statFaturamento;
   let tableView, crmView, cancelledView;
-  let btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes, clientesView;
+  let btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes, clientesView, btnViewServicos, servicosAdminView;
   let cancelledGrid, cancelledEmptyState;
   let modalBookingId, modalTitle, cardAgendadosTotal;
   let btnBloquearHorario, adminHorariosContainer, adminTimeSlotsGrid, btnCloseAdminHorarios;
@@ -52,6 +52,8 @@
     btnViewCancelled = document.getElementById('btnViewCancelled');
     btnViewClientes = document.getElementById('btnViewClientes');
     clientesView = document.getElementById('clientesView');
+    btnViewServicos = document.getElementById('btnViewServicos');
+    servicosAdminView = document.getElementById('servicosAdminView');
     cancelledGrid = document.getElementById('cancelledGrid');
     cancelledEmptyState = document.getElementById('cancelledEmptyState');
 
@@ -276,6 +278,9 @@
     btnViewCRM.addEventListener('click', () => switchView('crm'));
     btnViewCancelled.addEventListener('click', () => switchView('cancelled'));
     if (btnViewClientes) btnViewClientes.addEventListener('click', () => switchView('clientes'));
+    if (btnViewServicos) btnViewServicos.addEventListener('click', () => switchView('servicos'));
+    const btnNovo = document.getElementById('btnNovoServico');
+    if (btnNovo) btnNovo.addEventListener('click', novoServico);
     const busca = document.getElementById('clientesBusca');
     if (busca) busca.addEventListener('input', renderClientes);
     
@@ -427,7 +432,7 @@
     if (!tableView || !crmView || !cancelledView) return;
 
     // Reset buttons
-    [btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes].forEach(btn => {
+    [btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes, btnViewServicos].forEach(btn => {
       if (btn) btn.classList.remove('active');
     });
 
@@ -436,6 +441,7 @@
     crmView.style.display = 'none';
     cancelledView.style.display = 'none';
     if (clientesView) clientesView.style.display = 'none';
+    if (servicosAdminView) servicosAdminView.style.display = 'none';
 
     if (view === 'table') {
       tableView.style.display = 'block';
@@ -452,6 +458,111 @@
       clientesView.style.display = 'block';
       btnViewClientes.classList.add('active');
       carregarClientes();
+    } else if (view === 'servicos' && servicosAdminView) {
+      servicosAdminView.style.display = 'block';
+      btnViewServicos.classList.add('active');
+      carregarServicosAdmin();
+    }
+  }
+
+  // ==========================================
+  // Serviços e preços (editáveis pela dona)
+  // ==========================================
+  async function carregarServicosAdmin() {
+    const lista = document.getElementById('servicosAdminLista');
+    lista.innerHTML = '<p class="clientes-vazio">Carregando...</p>';
+    await CFG.carregarServicos(true);
+    const servicos = (CFG.todosServicosAdmin || []).flatMap(c => c.servicos.map(s => ({ ...s, categoria: c.nome })));
+    if (!servicos.length) {
+      lista.innerHTML = '<p class="clientes-vazio">Nenhum serviço cadastrado.</p>';
+      return;
+    }
+    lista.innerHTML = servicos.map(s => {
+      const vs = s.variacoes || [];
+      const linhasVar = vs.map(v => `
+        <div class="sv-var"><input class="form-input sv-var-rotulo" value="${escapeHTML(v.rotulo)}" placeholder="Ex.: Curto">
+        <input class="form-input sv-var-preco" type="number" min="0" step="0.01" value="${escapeHTML(v.preco)}"><button type="button" class="sv-var-del" title="Tirar">×</button></div>`).join('');
+      return `
+      <details class="cliente-card sv-card" data-id="${s.id}">
+        <summary>
+          <span class="cliente-nome">${escapeHTML(s.nome)}${s.ativo ? '' : ' <span class="badge-niver">(desativado)</span>'}</span>
+          <span class="cliente-meta">${escapeHTML(s.categoria)} · ${CFG.formatDuracao(s.duracao)} · comissão ${s.comissao}%</span>
+        </summary>
+        <div class="cliente-corpo">
+          <label>Nome <input class="form-input sv-nome" value="${escapeHTML(s.nome)}"></label>
+          <label>Categoria <input class="form-input sv-cat" value="${escapeHTML(s.categoria)}"></label>
+          <label>Descrição <input class="form-input sv-desc" value="${escapeHTML(s.desc || '')}"></label>
+          <div class="sv-linha">
+            <label>Duração (minutos) <input class="form-input sv-dur" type="number" min="5" max="720" step="5" value="${s.duracao}"></label>
+            <label>Comissão da auxiliar (%) <input class="form-input sv-com" type="number" min="0" max="100" step="0.5" value="${s.comissao}"></label>
+          </div>
+          <label>Preço único (deixe vazio se o preço é por comprimento) <input class="form-input sv-preco" type="number" min="0" step="0.01" value="${s.preco ?? ''}"></label>
+          <div class="sv-vars"><span class="variacao-titulo">Preço por comprimento</span>${linhasVar}</div>
+          <button type="button" class="btn btn-outline btn-sm sv-var-add">+ Comprimento</button>
+          <div class="sv-checks">
+            <label><input type="checkbox" class="sv-apartir" ${s.aPartirDe ? 'checked' : ''}> Mostrar "a partir de"</label>
+            <label><input type="checkbox" class="sv-agendavel" ${s.agendavel ? 'checked' : ''}> Cliente pode agendar pelo link</label>
+            <label><input type="checkbox" class="sv-ativo" ${s.ativo ? 'checked' : ''}> Ativo</label>
+          </div>
+          <div class="cliente-acoes"><button type="button" class="btn btn-primary btn-sm sv-salvar">Salvar</button></div>
+        </div>
+      </details>`;
+    }).join('');
+
+    lista.querySelectorAll('.sv-card').forEach(card => {
+      const vars = card.querySelector('.sv-vars');
+      const ligarDel = el => el.addEventListener('click', () => el.closest('.sv-var').remove());
+      card.querySelectorAll('.sv-var-del').forEach(ligarDel);
+      card.querySelector('.sv-var-add').addEventListener('click', () => {
+        vars.insertAdjacentHTML('beforeend', `<div class="sv-var"><input class="form-input sv-var-rotulo" placeholder="Ex.: Curto"><input class="form-input sv-var-preco" type="number" min="0" step="0.01"><button type="button" class="sv-var-del" title="Tirar">×</button></div>`);
+        ligarDel(vars.lastElementChild.querySelector('.sv-var-del'));
+      });
+      card.querySelector('.sv-salvar').addEventListener('click', () => salvarServico(card));
+    });
+  }
+
+  async function salvarServico(card) {
+    const v = sel => card.querySelector(sel).value.trim();
+    const variacoes = [...card.querySelectorAll('.sv-var')].map(l => ({
+      rotulo: l.querySelector('.sv-var-rotulo').value.trim(),
+      preco: Number(l.querySelector('.sv-var-preco').value)
+    })).filter(x => x.rotulo && x.preco > 0);
+    const dados = {
+      nome: v('.sv-nome'),
+      categoria: v('.sv-cat') || 'Serviços',
+      descricao: v('.sv-desc') || null,
+      duracao_min: Number(v('.sv-dur')),
+      comissao_pct: Number(v('.sv-com') || 0),
+      preco: v('.sv-preco') === '' ? null : Number(v('.sv-preco')),
+      variacoes,
+      a_partir_de: card.querySelector('.sv-apartir').checked,
+      agendavel: card.querySelector('.sv-agendavel').checked,
+      ativo: card.querySelector('.sv-ativo').checked,
+      updated_at: new Date().toISOString()
+    };
+    if (!dados.nome) { showToast('Informe o nome do serviço.', 'warning'); return; }
+    if (!(dados.duracao_min >= 5 && dados.duracao_min <= 720)) { showToast('A duração precisa ficar entre 5 e 720 minutos.', 'warning'); return; }
+    if (dados.preco == null && !variacoes.length) { showToast('Informe um preço único ou os preços por comprimento.', 'warning'); return; }
+    try {
+      const { error } = await window.db.from('servicos').update(dados).eq('id', Number(card.dataset.id));
+      if (error) throw error;
+      showToast('Serviço salvo!', 'success');
+      carregarServicosAdmin();
+    } catch (err) {
+      showToast('Erro ao salvar: ' + (err.message || 'tente de novo'), 'error');
+    }
+  }
+
+  async function novoServico() {
+    try {
+      const { error } = await window.db.from('servicos').insert([{
+        nome: 'Novo serviço ' + Math.floor(Math.random() * 1000), categoria: 'Serviços', duracao_min: 60, preco: 0, ativo: false, ordem: 99
+      }]);
+      if (error) throw error;
+      showToast('Serviço criado. Preencha e marque como ativo.', 'success');
+      carregarServicosAdmin();
+    } catch (err) {
+      showToast('Erro ao criar: ' + (err.message || 'tente de novo'), 'error');
     }
   }
 
@@ -553,16 +664,7 @@
 
   // --- Modal Service Selection Card Logic ---
   function initModalServiceSelection() {
-    const serviceItems = document.querySelectorAll('#modalServiceSelection .service-item');
-    const modalServico = document.getElementById('modalServico');
-    serviceItems.forEach(item => {
-      item.addEventListener('click', () => {
-        serviceItems.forEach(i => i.classList.remove('selected'));
-        item.classList.add('selected');
-        modalServico.value = item.dataset.value;
-        carregarHorariosModal();
-      });
-    });
+    CFG.ligarSelecao('modalServiceSelection', document.getElementById('modalServico'), () => carregarHorariosModal());
   }
 
   // ==========================================
@@ -751,15 +853,7 @@
       document.getElementById('modalBookingId').value = agData.id;
       
       // Marcar serviço
-      const serviceItems = document.querySelectorAll('#modalServiceSelection .service-item');
-      serviceItems.forEach(i => {
-        if (i.dataset.value === agData.servico) {
-          i.classList.add('selected');
-        } else {
-          i.classList.remove('selected');
-        }
-      });
-      document.getElementById('modalServico').value = agData.servico;
+      CFG.marcarServico('modalServiceSelection', agData.servico);
       modalProfissional.value = agData.profissional || '';
       
       // Carregar horários e depois selecionar o atual
@@ -772,9 +866,7 @@
       editingId = null;
       modalTitle.innerHTML = 'Nova <span class="gold">Reserva</span>';
       formNovaReserva.reset();
-      const serviceItems = document.querySelectorAll('#modalServiceSelection .service-item');
-      serviceItems.forEach(i => i.classList.remove('selected'));
-      document.getElementById('modalServico').value = '';
+      CFG.marcarServico('modalServiceSelection', '');
       document.getElementById('modalBookingId').value = '';
       modalProfissional.value = '';
       

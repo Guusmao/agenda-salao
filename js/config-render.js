@@ -10,15 +10,67 @@
   const cfg = window.APP_CONFIG;
   if (!cfg) return;
 
-  const todosServicos = cfg.categorias.flatMap(c => c.servicos);
-
-  // Tabela valor -> preço, usada no faturamento do painel
-  cfg.precos = Object.fromEntries(todosServicos.map(s => [s.valor, s.preco]));
-
-  // --- Agenda com duração por serviço ---
   const DURACAO_PADRAO = 60;
-  cfg.duracoes = Object.fromEntries(todosServicos.map(s => [s.valor, s.duracao || DURACAO_PADRAO]));
-  cfg.duracaoDe = valor => cfg.duracoes[valor] || DURACAO_PADRAO;
+  const SEP = ' · '; // "Escova · Médio": serviço + comprimento
+  let todosServicos = [];
+
+  // Tabelas valor -> preço (faturamento do painel) e serviço -> duração.
+  // São os mesmos objetos a vida toda, só o conteúdo muda quando os serviços chegam do banco.
+  cfg.precos = {};
+  cfg.duracoes = {};
+  cfg.base = valor => String(valor || '').split(SEP)[0];
+  cfg.duracaoDe = valor => cfg.duracoes[cfg.base(valor)] || DURACAO_PADRAO;
+  cfg.servicoDe = valor => todosServicos.find(s => s.valor === cfg.base(valor));
+
+  function indexar() {
+    todosServicos = cfg.categorias.flatMap(c => c.servicos);
+    Object.keys(cfg.precos).forEach(k => delete cfg.precos[k]);
+    Object.keys(cfg.duracoes).forEach(k => delete cfg.duracoes[k]);
+    todosServicos.forEach(s => {
+      cfg.duracoes[s.valor] = s.duracao || DURACAO_PADRAO;
+      if (s.preco != null) cfg.precos[s.valor] = Number(s.preco);
+      (s.variacoes || []).forEach(v => { cfg.precos[s.valor + SEP + v.rotulo] = Number(v.preco); });
+    });
+  }
+  indexar();
+
+  // Serviços cadastrados no painel (tabela "servicos"). Sem banco ou sem linhas, fica o config.js.
+  function deLinhas(linhas) {
+    const cats = [];
+    linhas.forEach(l => {
+      let cat = cats.find(c => c.nome === l.categoria);
+      if (!cat) { cat = { nome: l.categoria, icone: l.icone, classe: '', servicos: [] }; cats.push(cat); }
+      cat.servicos.push({
+        id: l.id, valor: l.nome, nome: l.nome, desc: l.descricao || '', icone: l.icone,
+        duracao: l.duracao_min, preco: l.preco == null ? null : Number(l.preco), aPartirDe: l.a_partir_de,
+        variacoes: l.variacoes || [], comissao: Number(l.comissao_pct || 0), agendavel: l.agendavel, ativo: l.ativo
+      });
+    });
+    return cats;
+  }
+
+  cfg.carregarServicos = async function (todos) {
+    if (!window.db) return cfg.categorias;
+    try {
+      let q = window.db.from('servicos').select('*').order('ordem', { ascending: true });
+      if (!todos) q = q.eq('ativo', true).eq('agendavel', true);
+      const { data, error } = await q;
+      if (!error && data && data.length) {
+        if (todos) {
+          // Painel: lista completa para edição; a página da cliente continua só com os agendáveis
+          cfg.todosServicosAdmin = deLinhas(data);
+        } else {
+          cfg.categorias = deLinhas(data);
+          indexar();
+          renderServicos();
+        }
+      }
+    } catch (e) { /* fica com o config.js */ }
+    return cfg.categorias;
+  };
+  document.addEventListener('DOMContentLoaded', () => {
+    cfg.servicosProntos = cfg.carregarServicos(false);
+  });
 
   const paraMin = h => { const [hh, mm] = String(h).split(':').map(Number); return hh * 60 + mm; };
   const paraHora = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
@@ -58,9 +110,13 @@
     return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
+  const reais = v => 'R$ ' + Number(v).toFixed(2).replace('.', ',');
+  cfg.reais = reais;
   function formatPreco(s) {
-    const valor = 'R$ ' + s.preco.toFixed(2).replace('.', ',');
-    return s.aPartirDe ? 'a partir de ' + valor : valor;
+    const vs = s.variacoes || [];
+    if (vs.length) return 'a partir de ' + reais(Math.min(...vs.map(v => Number(v.preco))));
+    if (s.preco == null) return 'sob consulta';
+    return (s.aPartirDe ? 'a partir de ' : '') + reais(s.preco);
   }
 
   // --- Cor de destaque ---
@@ -131,10 +187,64 @@
       <span class="service-item-duracao">${esc(cfg.formatDuracao(s.duracao || DURACAO_PADRAO))}</span>
     </div>`;
 
-  ['serviceSelection', 'modalServiceSelection'].forEach(id => {
-    const grid = document.getElementById(id);
-    if (grid) grid.innerHTML = todosServicos.map(itemSelecao).join('');
-  });
+  // Liga uma grade de serviços a um input escondido. Serviço com preço por comprimento
+  // mostra as opções embaixo e só preenche o valor depois que a cliente escolhe uma.
+  const ligacoes = {};
+  cfg.ligarSelecao = function (gridId, hidden, aoMudar) {
+    ligacoes[gridId] = { hidden, aoMudar };
+    desenharGrade(gridId);
+  };
+  cfg.marcarServico = function (gridId, valor) {
+    const l = ligacoes[gridId];
+    const grid = document.getElementById(gridId);
+    if (!l || !grid) return;
+    const base = cfg.base(valor);
+    grid.querySelectorAll('.service-item').forEach(i => i.classList.toggle('selected', !!valor && i.dataset.value === base));
+    mostrarVariacoes(gridId, valor ? base : null, valor);
+    l.hidden.value = valor || '';
+  };
+
+  function desenharGrade(gridId) {
+    const grid = document.getElementById(gridId);
+    const l = ligacoes[gridId];
+    if (!grid || !l) return;
+    grid.innerHTML = todosServicos.map(itemSelecao).join('');
+    grid.querySelectorAll('.service-item').forEach(item => item.addEventListener('click', () => {
+      grid.querySelectorAll('.service-item').forEach(i => i.classList.remove('selected'));
+      item.classList.add('selected');
+      const s = cfg.servicoDe(item.dataset.value);
+      l.hidden.value = (s.variacoes || []).length ? '' : s.valor;
+      mostrarVariacoes(gridId, s.valor, null);
+      if (l.aoMudar) l.aoMudar(l.hidden.value);
+    }));
+    mostrarVariacoes(gridId, null, null);
+  }
+
+  function mostrarVariacoes(gridId, base, valorAtual) {
+    const grid = document.getElementById(gridId);
+    const l = ligacoes[gridId];
+    let box = document.getElementById(gridId + 'Var');
+    if (!box) {
+      box = document.createElement('div');
+      box.id = gridId + 'Var';
+      box.className = 'variacao-box';
+      grid.insertAdjacentElement('afterend', box);
+    }
+    const s = base && cfg.servicoDe(base);
+    if (!s || !(s.variacoes || []).length) { box.innerHTML = ''; box.hidden = true; return; }
+    box.hidden = false;
+    box.innerHTML = `<span class="variacao-titulo">Comprimento do cabelo</span><div class="variacao-chips">` +
+      s.variacoes.map(v => {
+        const valor = s.valor + SEP + v.rotulo;
+        return `<button type="button" class="variacao-chip${valor === valorAtual ? ' selected' : ''}" data-value="${esc(valor)}">${esc(v.rotulo)}<small>${esc(reais(v.preco))}</small></button>`;
+      }).join('') + '</div>';
+    box.querySelectorAll('.variacao-chip').forEach(chip => chip.addEventListener('click', () => {
+      box.querySelectorAll('.variacao-chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      l.hidden.value = chip.dataset.value;
+      if (l.aoMudar) l.aoMudar(l.hidden.value);
+    }));
+  }
 
   // --- Profissionais ---
   cfg.profissionais = cfg.profissionais || [];
@@ -159,6 +269,7 @@
   }
 
   // --- Catálogo da página "Nossos Serviços" ---
+  function renderCatalogo() {
   const catalogo = document.getElementById('catalogoServicos');
   if (catalogo) {
     catalogo.innerHTML = cfg.categorias.map(cat => `
@@ -180,4 +291,11 @@
         </div>
       </div>`).join('');
   }
+  }
+
+  function renderServicos() {
+    Object.keys(ligacoes).forEach(desenharGrade);
+    renderCatalogo();
+  }
+  renderServicos();
 })();
