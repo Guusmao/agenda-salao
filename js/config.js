@@ -22,10 +22,8 @@ window.APP_CONFIG = {
   // --- Profissionais ---
   // Com 2 ou mais, a cliente escolhe com quem quer ser atendida e cada uma tem a própria agenda.
   // Com 1 ou nenhuma, a escolha some e a agenda é única.
-  profissionais: [
-    { nome: 'Profissional 1', desc: 'Cabelo e química' },
-    { nome: 'Profissional 2', desc: 'Unhas e sobrancelha' }
-  ],
+  // A agenda é única: uma cliente por vez, com a Aline.
+  profissionais: [],
 
   // --- Agenda ---
   // Os horários de início são gerados de "abertura" até "fechamento", de "intervalo" em "intervalo" minutos.
