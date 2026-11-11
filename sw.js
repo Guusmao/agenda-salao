@@ -1,9 +1,9 @@
 // ==========================================
-// Service Worker - Agendaí Barber
+// Service Worker - Agendaí Beauty
 // Versão com suporte a Push Notifications
 // ==========================================
 
-const CACHE_NAME = 'barbearia-cache-v33';
+const CACHE_NAME = 'salao-cache-v1';
 const urlsToCache = [
   './',
   './index.html',

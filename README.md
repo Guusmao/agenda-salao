@@ -1,12 +1,14 @@
-# Agenda Barbearia
+# Agendaí Beauty (salão)
 
-App de agendamento online para barbearias: o cliente escolhe serviço, dia e horário pelo celular, e o barbeiro acompanha tudo num painel.
+App de agendamento online para salões de beleza: a cliente escolhe serviço, profissional, dia e horário pelo celular, e o salão acompanha tudo num painel. Cada serviço tem a sua duração (ex.: escova 45 min, progressiva 3h) e a agenda só oferece horários em que o serviço inteiro cabe.
+
+Versão separada do app da barbearia, com banco próprio.
 
 Feito em HTML, CSS e JavaScript puro, com banco no [Neon](https://neon.com) (Postgres + Data API + Neon Auth). Não precisa de build para rodar.
 
-## Adaptar para uma barbearia nova
+## Adaptar para um salão novo
 
-1. Edite `js/config.js`: nome, logo, horários, serviços e preços.
+1. Edite `js/config.js`: nome, logo, profissionais, abertura/fechamento, serviços, preços e duração.
 2. Troque o logo em `img/` (e o caminho em `logoHero`).
 3. Se for um banco separado, crie um projeto no Neon, rode `db/001_schema.sql` e troque `NEON_URL` em `js/db.js`.
 

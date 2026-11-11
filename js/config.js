@@ -1,67 +1,74 @@
 // ==========================================
-// Configuração da barbearia
+// Configuração do salão
 // ==========================================
 // Este é o ÚNICO arquivo que você precisa editar para adaptar o app
-// a uma nova barbearia: nome, logo, horários e serviços.
+// a um salão novo: nome, logo, profissionais, horários e serviços.
 //
 // Atenção: o campo "valor" de cada serviço é o que fica salvo no banco.
 // Se já existem agendamentos com aquele serviço, não troque o "valor";
-// mude só "nome", "titulo", "desc" ou "preco".
+// mude só "nome", "titulo", "desc", "preco" ou "duracao".
 
 window.APP_CONFIG = {
   // --- Identidade ---
-  nome: 'Sua Barbearia',                // Nome completo (Google Agenda, painel)
-  nomeCurto: 'Sua Barbearia',           // Nome curto (rodapé e menu do admin)
-  marca: 'Agendaí Barber',               // Texto do logo no menu superior
-  logoHero: 'img/sua-logo.svg?v=2',         // Coloque o logo da barbearia em img/ e troque aqui
-  corDestaque: '#3d7eff',               // Cor dos botões, preços e detalhes (formato #rrggbb)
-  tituloPagina: 'Agendaí Barber | Agende seu horário',
-  descricaoPagina: 'Agende seu horário online. Cortes modernos, barba e muito mais com os melhores profissionais.',
-  textoCatalogo: 'Corte, barba e acabamento. Confira tudo o que oferecemos.',
+  nome: 'Seu Salão',                    // Nome completo (Google Agenda, painel)
+  nomeCurto: 'Seu Salão',               // Nome curto (rodapé e menu do admin)
+  marca: 'Agendaí Beauty',              // Texto do logo no menu superior
+  logoHero: 'img/sua-logo.svg?v=2',     // Coloque o logo do salão em img/ e troque aqui
+  corDestaque: '#c2577a',               // Cor dos botões, preços e detalhes (formato #rrggbb)
+  tituloPagina: 'Agendaí Beauty | Agende seu horário',
+  descricaoPagina: 'Agende seu horário online: cabelo, unhas, sobrancelha e muito mais.',
+  textoCatalogo: 'Cabelo, unhas e beleza. Confira tudo o que oferecemos.',
 
-  // --- Barbeiros ---
-  // Com 2 ou mais, o cliente escolhe com quem cortar e cada um tem a própria agenda.
-  // Com 1 ou nenhum, a escolha some e a agenda é única.
-  barbeiros: [
-    { nome: 'Barbeiro 1', desc: 'Degradê e barbado' },
-    { nome: 'Barbeiro 2', desc: 'Barba e corte clássico' }
+  // --- Profissionais ---
+  // Com 2 ou mais, a cliente escolhe com quem quer ser atendida e cada uma tem a própria agenda.
+  // Com 1 ou nenhuma, a escolha some e a agenda é única.
+  profissionais: [
+    { nome: 'Profissional 1', desc: 'Cabelo e química' },
+    { nome: 'Profissional 2', desc: 'Unhas e sobrancelha' }
   ],
 
   // --- Agenda ---
-  horarios: [
-    '09:00', '10:00', '11:00', '12:00',
-    '13:00', '14:00', '15:00', '16:00',
-    '17:00', '18:00', '19:00', '20:00'
-  ],
+  // Os horários de início são gerados de "abertura" até "fechamento", de "intervalo" em "intervalo" minutos.
+  // Um serviço só aparece num horário se couber inteiro até o fechamento.
+  abertura: '08:00',
+  fechamento: '20:00',
+  intervaloMinutos: 30,
   antecedenciaMinimaHoras: 1,
 
   // --- Lembrete no WhatsApp (botão 🔔 no painel) ---
-  // {nome}, {servico}, {data}, {horario} e {barbearia} são trocados pelos dados do agendamento
-  mensagemLembrete: 'Olá, {nome}! Passando para lembrar do seu horário na {barbearia}: {servico} em {data} às {horario}. Se não puder vir, é só responder esta mensagem para remarcar. Até lá!',
+  // {nome}, {servico}, {data}, {horario} e {salao} são trocados pelos dados do agendamento
+  mensagemLembrete: 'Olá, {nome}! Passando para lembrar do seu horário no {salao}: {servico} em {data} às {horario}. Se não puder vir, é só responder esta mensagem para remarcar. Até lá!',
 
   // --- Serviços ---
-  // nome:   como aparece na hora de agendar
-  // titulo: como aparece na página "Nossos Serviços" (opcional, usa "nome" se faltar)
+  // nome:     como aparece na hora de agendar
+  // titulo:   como aparece na página "Nossos Serviços" (opcional, usa "nome" se faltar)
+  // duracao:  minutos que o serviço ocupa na agenda
   // aPartirDe: true mostra "a partir de R$ X"
   categorias: [
     {
-      nome: 'Barbearia', icone: 'tesoura', classe: '',
+      nome: 'Cabelo', icone: 'secador', classe: '',
       servicos: [
-        { valor: 'Corte de Cabelo', nome: 'Corte de Cabelo', icone: 'tesoura', preco: 35, desc: 'Corte moderno e personalizado' },
-        { valor: 'Barba', nome: 'Barba', icone: 'barba', preco: 25, desc: 'Barba alinhada com navalha' },
-        { valor: 'Sobrancelha', nome: 'Sobrancelha', icone: 'olho', preco: 10, desc: 'Design e acabamento' },
-        { valor: 'Pezinho', nome: 'Pezinho', icone: 'regua', preco: 10, desc: 'Acabamento na nuca' },
-        { valor: 'Progressiva', nome: 'Progressiva', icone: 'chama', preco: 70, aPartirDe: true, desc: 'Alisamento e tratamento capilar' }
+        { valor: 'Corte Feminino', nome: 'Corte Feminino', icone: 'tesoura', preco: 60, duracao: 60, desc: 'Corte com lavagem e finalização' },
+        { valor: 'Escova', nome: 'Escova', icone: 'secador', preco: 45, duracao: 45, aPartirDe: true, desc: 'Escova modelada ou lisa' },
+        { valor: 'Hidratação', nome: 'Hidratação', icone: 'gota', preco: 70, duracao: 60, desc: 'Tratamento com máscara e escova' },
+        { valor: 'Coloração', nome: 'Coloração', icone: 'pincel', preco: 120, duracao: 120, aPartirDe: true, desc: 'Cor raiz ou global' },
+        { valor: 'Progressiva', nome: 'Progressiva', icone: 'chama', preco: 180, duracao: 180, aPartirDe: true, desc: 'Alisamento e redução de volume' }
       ]
     },
     {
-      nome: 'Combos Promocionais', icone: 'presente', classe: 'combo',
+      nome: 'Unhas', icone: 'esmalte', classe: '',
       servicos: [
-        { valor: 'Combo: Cabelo + Barba', nome: 'Cabelo + Barba', icone: 'tesoura+barba', preco: 50, desc: 'Combo completo' },
-        { valor: 'Combo: Cabelo + Sobrancelha', nome: 'Cabelo + Sobrancelha', icone: 'tesoura+olho', preco: 40, desc: 'Corte + design' },
-        { valor: 'Combo: Barba + Sobrancelha', nome: 'Barba + Sobrancelha', icone: 'barba+olho', preco: 32, desc: 'Barba + design' },
-        { valor: 'Combo: Barba + Pezinho', nome: 'Barba + Pezinho', icone: 'barba+regua', preco: 32, desc: 'Barba + acabamento' },
-        { valor: 'Combo: Cabelo + Barba + Sobrancelha', nome: 'Cabelo + Barba + Sobrancelha', icone: 'tesoura+barba+olho', preco: 50, desc: 'Combo premium completo' }
+        { valor: 'Manicure', nome: 'Manicure', icone: 'esmalte', preco: 30, duracao: 40, desc: 'Cutilagem e esmaltação' },
+        { valor: 'Pedicure', nome: 'Pedicure', icone: 'esmalte', preco: 35, duracao: 45, desc: 'Cutilagem e esmaltação dos pés' },
+        { valor: 'Pé e Mão', nome: 'Pé e Mão', icone: 'esmalte', preco: 60, duracao: 80, desc: 'Manicure e pedicure juntas' },
+        { valor: 'Alongamento em Gel', nome: 'Alongamento em Gel', icone: 'brilho', preco: 150, duracao: 150, desc: 'Alongamento com acabamento natural' }
+      ]
+    },
+    {
+      nome: 'Rosto', icone: 'olho', classe: '',
+      servicos: [
+        { valor: 'Design de Sobrancelha', nome: 'Design de Sobrancelha', icone: 'olho', preco: 35, duracao: 30, desc: 'Design com pinça e linha' },
+        { valor: 'Sobrancelha com Henna', nome: 'Sobrancelha com Henna', icone: 'olho', preco: 50, duracao: 45, desc: 'Design e preenchimento com henna' }
       ]
     }
   ]

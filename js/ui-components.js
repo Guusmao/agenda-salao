@@ -1,5 +1,5 @@
 /**
- * BARBEARIA - Premium UI Feedback System
+ * AGENDAÍ - Premium UI Feedback System
  * Toasts & Modals
  */
 

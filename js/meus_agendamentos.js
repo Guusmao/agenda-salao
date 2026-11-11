@@ -163,13 +163,13 @@
             <div class="agendamento-detail">
               <span class="detail-icon">${clockIcon}</span>
               <span class="detail-label">Horário:</span>
-              <span class="detail-value">${escapeHTML(item.horario)}</span>
+              <span class="detail-value">${escapeHTML(item.horario)}${item.duracao_min ? `–${escapeHTML(window.APP_CONFIG.horaFim(item.horario, item.duracao_min))}` : ""}</span>
             </div>
-            ${item.barbeiro ? `
+            ${item.profissional ? `
             <div class="agendamento-detail">
-              <span class="detail-icon">✂</span>
-              <span class="detail-label">Barbeiro:</span>
-              <span class="detail-value">${escapeHTML(item.barbeiro)}</span>
+              <span class="detail-icon">•</span>
+              <span class="detail-label">Profissional:</span>
+              <span class="detail-value">${escapeHTML(item.profissional)}</span>
             </div>` : ''}
           </div>
           ${cancelBtnHtml}

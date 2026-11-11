@@ -6,7 +6,8 @@
   'use strict';
 
   // --- Config ---
-  const HORARIOS = window.APP_CONFIG.horarios;
+  const CFG = window.APP_CONFIG;
+  const HORARIOS = CFG.horarios;
   const ANTECEDENCIA_MINIMA_HORAS = window.APP_CONFIG.antecedenciaMinimaHoras;
 
   // --- DOM Elements ---
@@ -20,11 +21,11 @@
   const btnSubmit = document.getElementById('btnSubmit');
   const toastContainer = document.getElementById('toastContainer');
 
-  const VARIOS_BARBEIROS = window.APP_CONFIG.temVariosBarbeiros;
-  const barbeiroHidden = document.getElementById('barbeiro');
+  const VARIOS_PROFISSIONAIS = window.APP_CONFIG.temVariosProfissionais;
+  const profissionalHidden = document.getElementById('profissional');
 
   let selectedSlot = null;
-  let horariosOcupados = []; // [{ horario, barbeiro }]
+  let horariosOcupados = []; // [{ horario, duracao_min, profissional }]
   let diaBloqueado = false;
 
   // --- Init ---
@@ -32,7 +33,7 @@
     setMinDate();
     renderTimeSlots();
     initServiceSelection();
-    initBarberSelection();
+    initProSelection();
     checkAuth(); // Check if already logged in
 
     dataInput.addEventListener('change', onDateChange);
@@ -70,18 +71,7 @@
         serviceItems.forEach(i => i.classList.remove('selected'));
         item.classList.add('selected');
         servicoSelect.value = item.dataset.value;
-      });
-    });
-  }
-
-  // --- Barber Selection (só aparece com 2 ou mais barbeiros) ---
-  function initBarberSelection() {
-    const items = document.querySelectorAll('#barberSelection .service-item');
-    items.forEach(item => {
-      item.addEventListener('click', () => {
-        items.forEach(i => i.classList.remove('selected'));
-        item.classList.add('selected');
-        barbeiroHidden.value = item.dataset.value;
+        // A duração muda quais horários cabem
         selectedSlot = null;
         horarioHidden.value = '';
         renderTimeSlots();
@@ -89,12 +79,33 @@
     });
   }
 
-  // Um horário está ocupado para o barbeiro escolhido se ele já tem cliente
-  // ou se o dono bloqueou o horário para todos (barbeiro vazio)
+  // --- Escolha da profissional (só aparece com 2 ou mais profissionais) ---
+  function initProSelection() {
+    const items = document.querySelectorAll('#proSelection .service-item');
+    items.forEach(item => {
+      item.addEventListener('click', () => {
+        items.forEach(i => i.classList.remove('selected'));
+        item.classList.add('selected');
+        profissionalHidden.value = item.dataset.value;
+        selectedSlot = null;
+        horarioHidden.value = '';
+        renderTimeSlots();
+      });
+    });
+  }
+
+  // Um horário está ocupado para a profissional escolhida se algum minuto do serviço
+  // bate com outro atendimento dela, ou com um bloqueio do salão todo (profissional vazio)
   function horarioOcupado(horario) {
-    return horariosOcupados.some(o =>
-      o.horario === horario && (!VARIOS_BARBEIROS || !o.barbeiro || o.barbeiro === barbeiroHidden.value)
+    const daAgenda = horariosOcupados.filter(o =>
+      !VARIOS_PROFISSIONAIS || !o.profissional || o.profissional === profissionalHidden.value
     );
+    return CFG.choca(horario, CFG.duracaoDe(servicoSelect.value), daAgenda);
+  }
+
+  // O serviço precisa terminar até o fechamento
+  function cabeNoDia(horario) {
+    return CFG.paraMin(horario) + CFG.duracaoDe(servicoSelect.value) <= CFG.fechamentoMin;
   }
 
   // --- Set min date to today ---
@@ -161,7 +172,7 @@
     try {
       const { data, error } = await window.db
         .from('horarios_ocupados')
-        .select('horario, barbeiro')
+        .select('horario, duracao_min, profissional')
         .eq('data', dataSelecionada);
 
       if (error) {
@@ -192,8 +203,13 @@
       return;
     }
 
-    if (VARIOS_BARBEIROS && !barbeiroHidden.value) {
-      timeSlotsGrid.innerHTML = '<p class="time-slots-hint">Escolha o barbeiro para ver os horários livres.</p>';
+    if (!servicoSelect.value) {
+      timeSlotsGrid.innerHTML = '<p class="time-slots-hint">Escolha o serviço para ver os horários livres.</p>';
+      return;
+    }
+
+    if (VARIOS_PROFISSIONAIS && !profissionalHidden.value) {
+      timeSlotsGrid.innerHTML = '<p class="time-slots-hint">Escolha o profissional para ver os horários livres.</p>';
       return;
     }
 
@@ -202,7 +218,7 @@
     const todayStr = getLocalDateString(now);
     const isToday = dataSelecionada === todayStr;
 
-    HORARIOS.forEach(horario => {
+    HORARIOS.filter(cabeNoDia).forEach(horario => {
       const slotEl = document.createElement('div');
       slotEl.className = 'time-slot';
       slotEl.textContent = horario;
@@ -287,8 +303,13 @@
       dataInput.focus();
       return;
     }
-    if (VARIOS_BARBEIROS && !barbeiroHidden.value) {
-      showToast('Escolha o barbeiro.', 'warning');
+    if (!servicoSelect.value) {
+      timeSlotsGrid.innerHTML = '<p class="time-slots-hint">Escolha o serviço para ver os horários livres.</p>';
+      return;
+    }
+
+    if (VARIOS_PROFISSIONAIS && !profissionalHidden.value) {
+      showToast('Escolha o profissional.', 'warning');
       return;
     }
     if (!horario) {
@@ -329,7 +350,8 @@
         p_telefone: telefone,
         p_data: data,
         p_horario: horario,
-        p_barbeiro: VARIOS_BARBEIROS ? barbeiroHidden.value : null
+        p_profissional: VARIOS_PROFISSIONAIS ? profissionalHidden.value : null,
+        p_duracao: CFG.duracaoDe(servico)
       });
 
       if (insertError) {
@@ -337,12 +359,12 @@
         const msg = insertError.message || '';
         if (msg.includes('HORARIO_OCUPADO')) {
           showToast('Este horário acabou de ser reservado. Escolha outro.', 'error');
-          horariosOcupados.push({ horario, barbeiro: barbeiroHidden.value || null });
+          horariosOcupados.push({ horario, duracao_min: CFG.duracaoDe(servico), profissional: profissionalHidden.value || null });
           renderTimeSlots();
           selectedSlot = null;
           horarioHidden.value = '';
         } else if (msg.includes('DIA_BLOQUEADO')) {
-          showToast('A barbearia não atende neste dia. Escolha outra data.', 'error');
+          showToast('O salão não atende neste dia. Escolha outra data.', 'error');
         } else {
           showToast('Erro ao agendar. Verifique os dados e tente novamente.', 'error');
         }
@@ -358,8 +380,8 @@
       form.reset();
       const serviceItems = document.querySelectorAll('#serviceSelection .service-item');
       serviceItems.forEach(i => i.classList.remove('selected'));
-      document.querySelectorAll('#barberSelection .service-item').forEach(i => i.classList.remove('selected'));
-      barbeiroHidden.value = '';
+      document.querySelectorAll('#proSelection .service-item').forEach(i => i.classList.remove('selected'));
+      profissionalHidden.value = '';
       selectedSlot = null;
       horarioHidden.value = '';
       setMinDate();
@@ -396,10 +418,7 @@
     const timePart = ag.horario.replace(':', '');
     const start = `${datePart}T${timePart}00`;
     
-    // Estimar 1h de duração
-    const hour = parseInt(ag.horario.split(':')[0]);
-    const endHour = (hour + 1).toString().padStart(2, '0');
-    const end = `${datePart}T${endHour}${timePart.slice(2)}00`;
+    const end = `${datePart}T${CFG.horaFim(ag.horario, CFG.duracaoDe(ag.servico)).replace(':', '')}00`;
     
     const text = encodeURIComponent(`Agendamento: ${ag.servico}`);
     const details = encodeURIComponent(`Olá! Seu agendamento de ${ag.servico} está confirmado.\nData: ${ag.data}\nHorário: ${ag.horario}\nLocal: ${window.APP_CONFIG.nome}`);

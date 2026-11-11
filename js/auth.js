@@ -7,7 +7,7 @@
 
   const Auth = {
     // Chave para o localStorage
-    STORAGE_KEY: 'agendbarber_user',
+    STORAGE_KEY: 'agendai_salao_user',
 
     /**
      * Tenta encontrar o usuário pelo telefone no Supabase

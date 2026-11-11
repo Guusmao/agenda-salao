@@ -1,7 +1,7 @@
 {
-  "name": "Agendaí Barber",
+  "name": "Agendaí Beauty",
   "short_name": "Agendaí",
-  "description": "Agende seu horário na barbearia pelo celular.",
+  "description": "Agende seu horário no salão pelo celular.",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0e1116",

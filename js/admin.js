@@ -186,13 +186,15 @@
   const modalHorario = document.getElementById('modalHorario');
   const modalTelefone = document.getElementById('modalTelefone');
 
-  const HORARIOS_DISPONIVEIS = window.APP_CONFIG.horarios;
-  const VARIOS_BARBEIROS = window.APP_CONFIG.temVariosBarbeiros;
-  const modalBarbeiro = document.getElementById('modalBarbeiro');
+  const CFG = window.APP_CONFIG;
+  const HORARIOS_DISPONIVEIS = CFG.horarios;
+  const faixa = ag => `${ag.horario}–${CFG.horaFim(ag.horario, ag.duracao_min)}`;
+  const VARIOS_PROFISSIONAIS = window.APP_CONFIG.temVariosProfissionais;
+  const modalProfissional = document.getElementById('modalProfissional');
 
-  // Mesmo critério do banco: ocupado se o barbeiro já tem cliente ou se o horário foi bloqueado para todos
-  function conflita(ag, barbeiro) {
-    return !VARIOS_BARBEIROS || !ag.barbeiro || !barbeiro || ag.barbeiro === barbeiro;
+  // Mesmo critério do banco: ocupado se o profissional já tem cliente ou se o horário foi bloqueado para todos
+  function conflita(ag, profissional) {
+    return !VARIOS_PROFISSIONAIS || !ag.profissional || !profissional || ag.profissional === profissional;
   }
 
   function showDashboard() {
@@ -254,7 +256,7 @@
     formNovaReserva.addEventListener('submit', salvarReservaManual);
     modalTelefone.addEventListener('input', formatModalPhone);
     modalData.addEventListener('change', carregarHorariosModal);
-    if (modalBarbeiro) modalBarbeiro.addEventListener('change', carregarHorariosModal);
+    if (modalProfissional) modalProfissional.addEventListener('change', carregarHorariosModal);
     initModalServiceSelection();
 
     if (cardAgendadosTotal) {
@@ -339,14 +341,12 @@
       slotEl.className = 'time-slot';
       slotEl.textContent = horario;
 
-      // Buscar se já existe agendamento ou bloqueio
-      const ag = currentAgendamentos.find(a => a.horario === horario);
+      // Atendimento ou bloqueio que ocupa este horário (pela duração)
+      const ag = currentAgendamentos.find(a => a.status !== 'cancelado' &&
+        CFG.choca(horario, CFG.intervaloMinutos || 30, [a]));
       
       if (ag) {
-        if (ag.status === 'cancelado') {
-          // Se cancelado, o slot volta a ficar livre para bloqueio
-          slotEl.addEventListener('click', () => toggleBloqueioHorario(horario, null));
-        } else if (ag.status === 'bloqueado') {
+        if (ag.status === 'bloqueado') {
           slotEl.classList.add('blocked-by-admin'); // Classe CSS customizada
           slotEl.style.backgroundColor = '#e74c3c';
           slotEl.style.borderColor = '#c0392b';
@@ -356,7 +356,7 @@
         } else {
           // Ocupado por cliente
           slotEl.classList.add('occupied');
-          slotEl.title = `Ocupado por: ${ag.nome}`;
+          slotEl.title = `Ocupado por: ${ag.nome} (${faixa(ag)})`;
         }
       } else {
         // Livre
@@ -402,6 +402,7 @@
             telefone: '-',
             data: data,
             horario: horario,
+            duracao_min: CFG.intervaloMinutos || 30,
             status: 'bloqueado'
           }]);
 
@@ -453,6 +454,7 @@
         serviceItems.forEach(i => i.classList.remove('selected'));
         item.classList.add('selected');
         modalServico.value = item.dataset.value;
+        carregarHorariosModal();
       });
     });
   }
@@ -652,7 +654,7 @@
         }
       });
       document.getElementById('modalServico').value = agData.servico;
-      modalBarbeiro.value = agData.barbeiro || '';
+      modalProfissional.value = agData.profissional || '';
       
       // Carregar horários e depois selecionar o atual
       carregarHorariosModal().then(() => {
@@ -668,7 +670,7 @@
       serviceItems.forEach(i => i.classList.remove('selected'));
       document.getElementById('modalServico').value = '';
       document.getElementById('modalBookingId').value = '';
-      modalBarbeiro.value = '';
+      modalProfissional.value = '';
       
       // Set min date to today
       const today = getLocalDateString();
@@ -709,22 +711,24 @@
       try {
         const { data, error } = await window.db
           .from('agendamentos')
-          .select('id, horario, barbeiro')
+          .select('id, horario, duracao_min, profissional')
           .eq('data', dataSel)
           .neq('status', 'cancelado');
         if (!error && data) {
-          ocupados = data
-            .filter(d => d.id !== editingId && conflita(d, modalBarbeiro.value))
-            .map(d => d.horario);
+          ocupados = data.filter(d => d.id !== editingId && conflita(d, modalProfissional.value));
         }
       } catch(e) { /* ignore */ }
     }
 
+    const duracao = CFG.duracaoDe(document.getElementById('modalServico').value);
     HORARIOS_DISPONIVEIS.forEach(h => {
       const opt = document.createElement('option');
       opt.value = h;
-      if (ocupados.includes(h)) {
+      if (CFG.choca(h, duracao, ocupados)) {
         opt.textContent = h + ' (ocupado)';
+        opt.disabled = true;
+      } else if (CFG.paraMin(h) + duracao > CFG.fechamentoMin) {
+        opt.textContent = h + ' (passa do fechamento)';
         opt.disabled = true;
       } else {
         opt.textContent = h;
@@ -740,50 +744,40 @@
     const telefone = modalTelefone.value.trim();
     const data = modalData.value;
     const horario = modalHorario.value;
-    const barbeiro = VARIOS_BARBEIROS ? modalBarbeiro.value : null;
+    const profissional = VARIOS_PROFISSIONAIS ? modalProfissional.value : null;
     const id = document.getElementById('modalBookingId').value;
 
     if (!servico) { showToast('Selecione um serviço.', 'warning'); return; }
     if (!nome) { showToast('Informe o nome do cliente.', 'warning'); return; }
     if (!telefone || telefone.replace(/\D/g, '').length < 10) { showToast('Informe um telefone válido.', 'warning'); return; }
     if (!data) { showToast('Selecione a data.', 'warning'); return; }
-    if (VARIOS_BARBEIROS && !barbeiro) { showToast('Selecione o barbeiro.', 'warning'); return; }
+    if (VARIOS_PROFISSIONAIS && !profissional) { showToast('Selecione o profissional.', 'warning'); return; }
     if (!horario) { showToast('Selecione um horário.', 'warning'); return; }
 
     try {
-      // Check slot availability (if date/time changed or if it's new)
-      let needsCheck = true;
-      if (modalMode === 'edit') {
-        const original = currentAgendamentos.find(a => a.id == id);
-        if (original && original.data === data && original.horario === horario && (original.barbeiro || null) === barbeiro) {
-          needsCheck = false;
-        }
+      // O serviço inteiro (pela duração) precisa caber sem bater em outro atendimento
+      const duracao_min = CFG.duracaoDe(servico);
+      const { data: conflito, error: checkErr } = await window.db.rpc('horario_conflita', {
+        p_data: data,
+        p_horario: horario,
+        p_duracao: duracao_min,
+        p_profissional: profissional,
+        p_ignorar: id || null
+      });
+      if (checkErr) {
+        showToast('Erro ao verificar horário: ' + checkErr.message, 'error');
+        return;
       }
-
-      if (needsCheck) {
-        const { data: mesmoHorario, error: checkErr } = await window.db
-          .from('agendamentos')
-          .select('id, barbeiro')
-          .eq('data', data)
-          .eq('horario', horario)
-          .neq('status', 'cancelado');
-        const existing = (mesmoHorario || []).filter(a => a.id !== id && conflita(a, barbeiro));
-
-        if (checkErr) {
-          showToast('Erro ao verificar horário: ' + checkErr.message, 'error');
-          return;
-        }
-        if (existing && existing.length > 0) {
-          showToast('Este horário já está ocupado por outro agendamento.', 'error');
-          carregarHorariosModal();
-          return;
-        }
+      if (conflito) {
+        showToast('Esse horário bate com outro atendimento. Escolha outro.', 'error');
+        carregarHorariosModal();
+        return;
       }
 
       if (modalMode === 'edit') {
         const { error: updateErr } = await window.db
           .from('agendamentos')
-          .update({ servico, nome, telefone, data, horario, barbeiro })
+          .update({ servico, nome, telefone, data, horario, duracao_min, profissional })
           .eq('id', id);
 
         if (updateErr) {
@@ -794,7 +788,7 @@
       } else {
         const { error: insertErr } = await window.db
           .from('agendamentos')
-          .insert([{ servico, nome, telefone, data, horario, barbeiro, status: 'agendado' }]);
+          .insert([{ servico, nome, telefone, data, horario, duracao_min, profissional, status: 'agendado' }]);
 
         if (insertErr) {
           showToast('Erro ao criar: ' + insertErr.message, 'error');
@@ -963,7 +957,7 @@
       if (vencido) tr.classList.add('row-vencido');
       tr.innerHTML = `
         <td data-label="Serviço"><span class="badge badge-service">${escapeHTML(ag.servico)}</span></td>
-        <td data-label="Cliente">${escapeHTML(ag.nome)}${ag.barbeiro ? `<br><span class="badge-barbeiro">✂ ${escapeHTML(ag.barbeiro)}</span>` : ''}</td>
+        <td data-label="Cliente">${escapeHTML(ag.nome)}${ag.profissional ? `<br><span class="badge-profissional">${escapeHTML(ag.profissional)}</span>` : ''}</td>
         <td data-label="Telefone">
           ${escapeHTML(ag.telefone)}
           <a href="https://wa.me/55${ag.telefone.replace(/\D/g, '')}" target="_blank" class="whatsapp-link" title="Conversar no WhatsApp" style="margin-left: 5px; display: inline-flex; align-items: center; vertical-align: middle;">
@@ -971,7 +965,7 @@
           </a>
         </td>
         <td data-label="Data">${formatDateBR(ag.data)}</td>
-        <td data-label="Horário"><strong>${escapeHTML(ag.horario)}</strong>${vencido ? ' <span class="badge-vencido" title="Prazo vencido">VENCIDO</span>' : ''}</td>
+        <td data-label="Horário"><strong>${escapeHTML(faixa(ag))}</strong>${vencido ? ' <span class="badge-vencido" title="Prazo vencido">VENCIDO</span>' : ''}</td>
         <td data-label="Status"><span class="badge-status badge-${status}">${status.toUpperCase()}</span></td>
         <td data-label="Ações">
           <div style="display:flex; gap:5px; flex-wrap:wrap;">
@@ -1040,10 +1034,10 @@
 
       card.innerHTML = `
         <div class="crm-card-header">
-          <div class="crm-card-time">${ag.horario}</div>
+          <div class="crm-card-time">${escapeHTML(faixa(ag))}</div>
           <div class="crm-card-service-badge">${escapeHTML(ag.servico)}</div>
         </div>
-        <div class="crm-card-client">${escapeHTML(ag.nome)}${ag.barbeiro ? ` <span class="badge-barbeiro">✂ ${escapeHTML(ag.barbeiro)}</span>` : ''}</div>
+        <div class="crm-card-client">${escapeHTML(ag.nome)}${ag.profissional ? ` <span class="badge-profissional">${escapeHTML(ag.profissional)}</span>` : ''}</div>
         <div class="crm-card-phone">
           <a href="https://wa.me/55${ag.telefone.replace(/\D/g, '')}" target="_blank" class="phone-link" title="Abrir WhatsApp">
             <span class="phone-icon">
@@ -1106,10 +1100,10 @@
 
       card.innerHTML = `
         <div class="crm-card-header">
-          <div class="crm-card-time">${ag.horario}</div>
+          <div class="crm-card-time">${escapeHTML(faixa(ag))}</div>
           <div class="crm-card-service-badge">${escapeHTML(ag.servico)}</div>
         </div>
-        <div class="crm-card-client">${escapeHTML(ag.nome)}${ag.barbeiro ? ` <span class="badge-barbeiro">✂ ${escapeHTML(ag.barbeiro)}</span>` : ''}</div>
+        <div class="crm-card-client">${escapeHTML(ag.nome)}${ag.profissional ? ` <span class="badge-profissional">${escapeHTML(ag.profissional)}</span>` : ''}</div>
         <div class="crm-card-phone">
           <a href="https://wa.me/55${ag.telefone.replace(/\D/g, '')}" target="_blank" class="phone-link" title="Abrir WhatsApp">
             <span class="phone-icon">
@@ -1456,7 +1450,7 @@
       servico: ag.servico,
       data: formatDateBR(ag.data),
       horario: ag.horario,
-      barbearia: window.APP_CONFIG.nome
+      salao: window.APP_CONFIG.nome
     };
     const texto = window.APP_CONFIG.mensagemLembrete.replace(/\{(\w+)\}/g, (m, chave) => valores[chave] ?? m);
     return `https://wa.me/55${ag.telefone.replace(/\D/g, '')}?text=${encodeURIComponent(texto)}`;
@@ -1468,10 +1462,7 @@
     const timePart = ag.horario.replace(':', '');
     const start = `${datePart}T${timePart}00`;
     
-    // Estimar 1h de duração
-    const hour = parseInt(ag.horario.split(':')[0]);
-    const endHour = (hour + 1).toString().padStart(2, '0');
-    const end = `${datePart}T${endHour}${timePart.slice(2)}00`;
+    const end = `${datePart}T${CFG.horaFim(ag.horario, ag.duracao_min).replace(':', '')}00`;
     
     const text = encodeURIComponent(`Agendamento: ${ag.servico} - ${ag.nome}`);
     const details = encodeURIComponent(`Cliente: ${ag.nome}\nTelefone: ${ag.telefone}\nServiço: ${ag.servico}`);
