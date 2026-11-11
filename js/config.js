@@ -10,12 +10,12 @@
 
 window.APP_CONFIG = {
   // --- Identidade ---
-  nome: 'Seu Salão',                    // Nome completo (Google Agenda, painel)
-  nomeCurto: 'Seu Salão',               // Nome curto (rodapé e menu do admin)
-  marca: 'Agendaí Beauty',              // Texto do logo no menu superior
-  logoHero: 'img/sua-logo.svg?v=2',     // Coloque o logo do salão em img/ e troque aqui
-  corDestaque: '#c2577a',               // Cor dos botões, preços e detalhes (formato #rrggbb)
-  tituloPagina: 'Agendaí Beauty | Agende seu horário',
+  nome: 'Aline Ramos',                    // Nome completo (Google Agenda, painel)
+  nomeCurto: 'Aline Ramos',               // Nome curto (rodapé e menu do admin)
+  marca: 'Aline Ramos',                 // Texto do logo no menu superior
+  logoHero: 'img/logo-aline-ramos.png?v=1',     // Coloque o logo do salão em img/ e troque aqui
+  corDestaque: '#d4ab57',               // Cor dos botões, preços e detalhes (formato #rrggbb)
+  tituloPagina: 'Aline Ramos | Agende seu horário',
   descricaoPagina: 'Agende seu horário online: cabelo, unhas, sobrancelha e muito mais.',
   textoCatalogo: 'Cabelo, unhas e beleza. Confira tudo o que oferecemos.',
 
