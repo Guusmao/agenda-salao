@@ -10,7 +10,7 @@
   let statAgendados, statRealizados, statCancelados, statHoje;
   let statRealizadosMes, statAgendadosMes, statCanceladosMes, statFaturamento;
   let tableView, crmView, cancelledView;
-  let btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes, clientesView, btnViewServicos, servicosAdminView;
+  let btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes, clientesView, btnViewServicos, servicosAdminView, btnViewFuncionamento, funcionamentoView;
   let cancelledGrid, cancelledEmptyState;
   let modalBookingId, modalTitle, cardAgendadosTotal;
   let btnBloquearHorario, adminHorariosContainer, adminTimeSlotsGrid, btnCloseAdminHorarios;
@@ -54,6 +54,8 @@
     clientesView = document.getElementById('clientesView');
     btnViewServicos = document.getElementById('btnViewServicos');
     servicosAdminView = document.getElementById('servicosAdminView');
+    btnViewFuncionamento = document.getElementById('btnViewFuncionamento');
+    funcionamentoView = document.getElementById('funcionamentoView');
     cancelledGrid = document.getElementById('cancelledGrid');
     cancelledEmptyState = document.getElementById('cancelledEmptyState');
 
@@ -279,6 +281,11 @@
     btnViewCancelled.addEventListener('click', () => switchView('cancelled'));
     if (btnViewClientes) btnViewClientes.addEventListener('click', () => switchView('clientes'));
     if (btnViewServicos) btnViewServicos.addEventListener('click', () => switchView('servicos'));
+    if (btnViewFuncionamento) btnViewFuncionamento.addEventListener('click', () => switchView('funcionamento'));
+    const fnSalvar = document.getElementById('fnSalvar');
+    if (fnSalvar) fnSalvar.addEventListener('click', salvarFuncionamento);
+    const fnAdd = document.getElementById('fnAddData');
+    if (fnAdd) fnAdd.addEventListener('click', abrirDataExtra);
     const btnNovo = document.getElementById('btnNovoServico');
     if (btnNovo) btnNovo.addEventListener('click', novoServico);
     const busca = document.getElementById('clientesBusca');
@@ -432,7 +439,7 @@
     if (!tableView || !crmView || !cancelledView) return;
 
     // Reset buttons
-    [btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes, btnViewServicos].forEach(btn => {
+    [btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes, btnViewServicos, btnViewFuncionamento].forEach(btn => {
       if (btn) btn.classList.remove('active');
     });
 
@@ -442,6 +449,7 @@
     cancelledView.style.display = 'none';
     if (clientesView) clientesView.style.display = 'none';
     if (servicosAdminView) servicosAdminView.style.display = 'none';
+    if (funcionamentoView) funcionamentoView.style.display = 'none';
 
     if (view === 'table') {
       tableView.style.display = 'block';
@@ -462,7 +470,82 @@
       servicosAdminView.style.display = 'block';
       btnViewServicos.classList.add('active');
       carregarServicosAdmin();
+    } else if (view === 'funcionamento' && funcionamentoView) {
+      funcionamentoView.style.display = 'block';
+      btnViewFuncionamento.classList.add('active');
+      carregarFuncionamentoAdmin();
     }
+  }
+
+  // ==========================================
+  // Funcionamento: dias, horários, sinal e datas extras
+  // ==========================================
+  const HORA_OK = /^([01][0-9]|2[0-3]):[0-5][0-9]$/;
+
+  async function carregarFuncionamentoAdmin() {
+    await CFG.carregarFuncionamento();
+    const c = CFG.funcionamento || {};
+    document.getElementById('fnDias').innerHTML = CFG.nomesDias.map((n, i) => `
+      <label class="fn-dia"><input type="checkbox" value="${i}" ${CFG.diasSemana.includes(i) ? 'checked' : ''}> ${n.slice(0, 3)}</label>`).join('');
+    document.getElementById('fnPrimeiro').value = c.primeiro_horario || CFG.primeiroHorario || '08:00';
+    document.getElementById('fnUltimo').value = c.ultimo_horario || CFG.ultimoHorario || '22:00';
+    document.getElementById('fnFechamento').value = c.fechamento || CFG.fechamento || '24:00';
+    document.getElementById('fnIntervalo').value = String(c.intervalo_min || CFG.intervaloMinutos || 30);
+    document.getElementById('fnSinal').value = c.valor_sinal != null ? Number(c.valor_sinal) : 50;
+    document.getElementById('fnRemarcar').value = c.horas_para_remarcar != null ? c.horas_para_remarcar : 24;
+    await listarDatasExtras();
+  }
+
+  async function listarDatasExtras() {
+    const ul = document.getElementById('fnDatas');
+    try {
+      const hoje = getLocalDateString();
+      const { data } = await window.db.from('dias_abertos').select('id, data').gte('data', hoje).order('data', { ascending: true });
+      ul.innerHTML = (data || []).length
+        ? data.map(d => `<li><span>${formatDateBR(d.data)}</span> ${CFG.nomesDias[new Date(d.data + 'T12:00:00').getDay()]} <button type="button" class="sv-var-del fn-del" data-id="${d.id}" title="Fechar de novo">×</button></li>`).join('')
+        : '<li>Nenhuma data extra.</li>';
+      ul.querySelectorAll('.fn-del').forEach(b => b.addEventListener('click', async () => {
+        await window.db.from('dias_abertos').delete().eq('id', b.dataset.id);
+        listarDatasExtras();
+      }));
+    } catch (e) {
+      ul.innerHTML = '<li>Não foi possível carregar.</li>';
+    }
+  }
+
+  async function abrirDataExtra() {
+    const data = document.getElementById('fnNovaData').value;
+    if (!data) { showToast('Escolha a data.', 'warning'); return; }
+    const { error } = await window.db.from('dias_abertos').insert([{ data }]);
+    if (error) { showToast(error.message.includes('duplicate') ? 'Essa data já está aberta.' : 'Erro ao abrir a data.', 'error'); return; }
+    showToast(`Dia ${formatDateBR(data)} aberto para agendamento!`, 'success');
+    document.getElementById('fnNovaData').value = '';
+    listarDatasExtras();
+  }
+
+  async function salvarFuncionamento() {
+    const dias = [...document.querySelectorAll('#fnDias input:checked')].map(i => Number(i.value));
+    const primeiro = document.getElementById('fnPrimeiro').value.trim();
+    const ultimo = document.getElementById('fnUltimo').value.trim();
+    const fechamento = document.getElementById('fnFechamento').value.trim();
+    if (!HORA_OK.test(primeiro) || !HORA_OK.test(ultimo) || !(HORA_OK.test(fechamento) || fechamento === '24:00')) {
+      showToast('Use o formato 08:00 nos horários (fechamento pode ser 24:00).', 'warning'); return;
+    }
+    if (ultimo < primeiro) { showToast('O último horário precisa ser depois do primeiro.', 'warning'); return; }
+    const dados = {
+      dias_semana: dias,
+      primeiro_horario: primeiro,
+      ultimo_horario: ultimo,
+      fechamento,
+      intervalo_min: Number(document.getElementById('fnIntervalo').value),
+      valor_sinal: Number(document.getElementById('fnSinal').value || 0),
+      horas_para_remarcar: Number(document.getElementById('fnRemarcar').value || 0),
+      updated_at: new Date().toISOString()
+    };
+    const { error } = await window.db.from('configuracoes').update(dados).eq('id', 1);
+    if (error) { showToast('Erro ao salvar: ' + error.message, 'error'); return; }
+    CFG.aplicarFuncionamento(dados);
+    showToast('Funcionamento salvo!', 'success');
   }
 
   // ==========================================

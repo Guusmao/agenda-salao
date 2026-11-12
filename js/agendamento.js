@@ -27,6 +27,7 @@
   let selectedSlot = null;
   let horariosOcupados = []; // [{ horario, duracao_min, profissional }]
   let diaBloqueado = false;
+  let diaFechado = false; // fora dos dias de funcionamento
 
   // --- Init ---
   function init() {
@@ -103,11 +104,16 @@
   }
 
   // --- Set min date to today ---
-  function setMinDate() {
+  async function setMinDate() {
     const today = getLocalDateString();
     dataInput.setAttribute('min', today);
     dataInput.value = today;
     CFG.marcarServico('serviceSelection', '');
+    // Já começa no próximo dia em que o salão atende
+    if (CFG.funcionamentoPronto) await CFG.funcionamentoPronto;
+    const d = new Date();
+    for (let i = 0; i < 60 && !CFG.abreNoDia(getLocalDateString(d)); i++) d.setDate(d.getDate() + 1);
+    if (CFG.abreNoDia(getLocalDateString(d))) dataInput.value = getLocalDateString(d);
     onDateChange();
   }
 
@@ -142,8 +148,16 @@
 
     horariosOcupados = [];
     diaBloqueado = false;
+    diaFechado = false;
     selectedSlot = null;
     horarioHidden.value = '';
+
+    if (CFG.funcionamentoPronto) await CFG.funcionamentoPronto;
+    if (!CFG.abreNoDia(dataSelecionada)) {
+      diaFechado = true;
+      renderTimeSlots();
+      return;
+    }
 
     try {
       // Verificar se o dia está bloqueado
@@ -182,6 +196,17 @@
   // --- Render time slots ---
   function renderTimeSlots() {
     timeSlotsGrid.innerHTML = '';
+
+    if (diaFechado) {
+      timeSlotsGrid.innerHTML = `
+        <div class="dia-bloqueado-aviso">
+          <span class="dia-bloqueado-aviso-icon">📅</span>
+          <strong>Não atendemos neste dia</strong>
+          <p>Os agendamentos são ${CFG.textoDias()}.<br>Escolha outra data.</p>
+        </div>
+      `;
+      return;
+    }
 
     // Se o dia está bloqueado, mostrar banner
     if (diaBloqueado) {
@@ -355,6 +380,8 @@
           renderTimeSlots();
           selectedSlot = null;
           horarioHidden.value = '';
+        } else if (msg.includes('FORA_DO_HORARIO')) {
+          showToast('Esse serviço não cabe nesse horário. Escolha um horário mais cedo.', 'error');
         } else if (msg.includes('DIA_BLOQUEADO')) {
           showToast('O salão não atende neste dia. Escolha outra data.', 'error');
         } else {

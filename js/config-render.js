@@ -77,15 +77,59 @@
   cfg.paraMin = paraMin;
   cfg.paraHora = paraHora;
 
-  // Horários de início, de abertura até fechamento
-  if (!cfg.horarios) {
+  // --- Funcionamento (vem da tabela "configuracoes"; config.js é só o padrão) ---
+  // primeiroHorario/ultimoHorario: quando a cliente pode COMEÇAR; fechamento: até quando o serviço pode terminar
+  cfg.horarios = [];
+  cfg.diasSemana = cfg.diasSemana || [4, 5, 6];
+  cfg.diasAbertos = new Set();
+  function montarHorarios() {
     const passo = cfg.intervaloMinutos || 30;
-    cfg.horarios = [];
-    for (let m = paraMin(cfg.abertura || '09:00'); m < paraMin(cfg.fechamento || '18:00'); m += passo) {
-      cfg.horarios.push(paraHora(m));
-    }
+    const ini = paraMin(cfg.primeiroHorario || cfg.abertura || '09:00');
+    const fim = cfg.ultimoHorario ? paraMin(cfg.ultimoHorario) : paraMin(cfg.fechamento || '18:00') - passo;
+    cfg.horarios.length = 0; // mesmo array: quem guardou a referência vê a mudança
+    for (let m = ini; m <= fim; m += passo) cfg.horarios.push(paraHora(m));
+    cfg.fechamentoMin = cfg.fechamento ? paraMin(cfg.fechamento) : fim + DURACAO_PADRAO;
   }
-  cfg.fechamentoMin = cfg.fechamento ? paraMin(cfg.fechamento) : paraMin(cfg.horarios[cfg.horarios.length - 1]) + DURACAO_PADRAO;
+  montarHorarios();
+
+  const NOMES_DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+  cfg.nomesDias = NOMES_DIAS;
+  cfg.textoDias = () => {
+    const d = [...cfg.diasSemana].sort((a, b) => a - b);
+    if (!d.length) return 'só em datas especiais';
+    const seguidos = d.every((x, i) => i === 0 || x === d[i - 1] + 1);
+    if (seguidos && d.length > 2) return `de ${NOMES_DIAS[d[0]]} a ${NOMES_DIAS[d[d.length - 1]]}`;
+    return d.map(x => NOMES_DIAS[x]).join(', ').replace(/, ([^,]*)$/, ' e $1');
+  };
+  // Dia normal de funcionamento ou data aberta avulsa (dias bloqueados são checados à parte)
+  cfg.abreNoDia = dataStr => cfg.diasAbertos.has(dataStr) ||
+    cfg.diasSemana.includes(new Date(dataStr + 'T12:00:00').getDay());
+
+  cfg.aplicarFuncionamento = c => {
+    cfg.diasSemana = (c.dias_semana || cfg.diasSemana).map(Number);
+    cfg.primeiroHorario = c.primeiro_horario;
+    cfg.ultimoHorario = c.ultimo_horario;
+    cfg.fechamento = c.fechamento;
+    cfg.intervaloMinutos = c.intervalo_min;
+    cfg.valorSinal = Number(c.valor_sinal);
+    cfg.horasParaRemarcar = c.horas_para_remarcar;
+    cfg.funcionamento = c;
+    montarHorarios();
+  };
+  cfg.carregarFuncionamento = async function () {
+    if (!window.db) return;
+    try {
+      const [{ data: conf }, { data: abertos }] = await Promise.all([
+        window.db.from('configuracoes').select('*').eq('id', 1),
+        window.db.from('dias_abertos').select('data')
+      ]);
+      if (conf && conf[0]) cfg.aplicarFuncionamento(conf[0]);
+      cfg.diasAbertos = new Set((abertos || []).map(d => d.data));
+    } catch (e) { /* fica o padrão */ }
+  };
+  document.addEventListener('DOMContentLoaded', () => {
+    cfg.funcionamentoPronto = cfg.carregarFuncionamento();
+  });
 
   // Hora de término de um agendamento
   cfg.horaFim = (horario, duracao) => paraHora(paraMin(horario) + (duracao || DURACAO_PADRAO));

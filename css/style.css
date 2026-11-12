@@ -2820,3 +2820,9 @@ tr.row-vencido {
 .sv-var-del { background: none; border: 1px solid rgba(255,255,255,0.15); color: var(--text-secondary, #aaa); border-radius: 8px; font-size: 1.1rem; cursor: pointer; }
 .sv-checks { display: flex; flex-direction: column; gap: 6px; }
 .sv-checks label { flex-direction: row !important; align-items: center; gap: 8px !important; }
+
+/* ---------- Funcionamento (painel) ---------- */
+.fn-card { margin-bottom: 12px; }
+.fn-dias { display: flex; flex-wrap: wrap; gap: 8px; }
+.fn-dia { flex-direction: row !important; align-items: center; gap: 6px !important; padding: 6px 10px; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; text-transform: capitalize; color: var(--text-primary) !important; }
+.fn-del { width: 28px; height: 28px; margin-left: 8px; }

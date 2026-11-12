@@ -301,6 +301,9 @@
               <button class="btn-toggle" id="btnViewServicos">
                 <span class="icon">✂️</span> Serviços e preços
               </button>
+              <button class="btn-toggle" id="btnViewFuncionamento">
+                <span class="icon">🗓️</span> Funcionamento
+              </button>
             </div>
 
             <!-- Toolbar -->
@@ -411,6 +414,42 @@
                 <p>Nenhum agendamento cancelado.</p>
               </div>
             </div> <!-- Fim cancelledView -->
+
+            <!-- Funcionamento: dias, horários e sinal -->
+            <div class="servicos-admin-view" id="funcionamentoView" style="display: none;">
+              <div class="cliente-card fn-card">
+                <div class="cliente-corpo">
+                  <span class="variacao-titulo">Dias em que o salão atende</span>
+                  <div class="fn-dias" id="fnDias"></div>
+                  <div class="sv-linha">
+                    <label>Primeiro horário <input class="form-input" id="fnPrimeiro" placeholder="08:00" maxlength="5"></label>
+                    <label>Último horário para começar <input class="form-input" id="fnUltimo" placeholder="22:00" maxlength="5"></label>
+                  </div>
+                  <div class="sv-linha">
+                    <label>Serviço pode terminar até <input class="form-input" id="fnFechamento" placeholder="24:00" maxlength="5"></label>
+                    <label>Intervalo entre horários
+                      <select class="form-input" id="fnIntervalo"><option value="15">15 min</option><option value="30">30 min</option><option value="60">1 hora</option></select>
+                    </label>
+                  </div>
+                  <div class="sv-linha">
+                    <label>Valor do sinal (R$) <input class="form-input" id="fnSinal" type="number" min="0" step="1"></label>
+                    <label>Pode remarcar até (horas antes) <input class="form-input" id="fnRemarcar" type="number" min="0" step="1"></label>
+                  </div>
+                  <div class="cliente-acoes"><button type="button" class="btn btn-primary btn-sm" id="fnSalvar">Salvar</button></div>
+                </div>
+              </div>
+              <div class="cliente-card fn-card">
+                <div class="cliente-corpo">
+                  <span class="variacao-titulo">Datas extras abertas (ex.: terças e quartas de dezembro)</span>
+                  <div class="sv-var" style="grid-template-columns: 1fr auto;">
+                    <input type="date" class="form-input" id="fnNovaData">
+                    <button type="button" class="btn btn-outline btn-sm" id="fnAddData">Abrir esta data</button>
+                  </div>
+                  <ul class="cliente-hist" id="fnDatas"></ul>
+                  <p class="servicos-admin-ajuda">Para fechar um dia normal (feriado, folga), use "Bloquear dia" na agenda.</p>
+                </div>
+              </div>
+            </div>
 
             <!-- Serviços: preço, duração e comissão editáveis -->
             <div class="servicos-admin-view" id="servicosAdminView" style="display: none;">

@@ -25,11 +25,13 @@ window.APP_CONFIG = {
   // A agenda é única: uma cliente por vez, com a Aline.
   profissionais: [],
 
-  // --- Agenda ---
-  // Os horários de início são gerados de "abertura" até "fechamento", de "intervalo" em "intervalo" minutos.
-  // Um serviço só aparece num horário se couber inteiro até o fechamento.
-  abertura: '08:00',
-  fechamento: '20:00',
+  // --- Agenda (padrão; a dona muda no painel, aba "Funcionamento") ---
+  // A cliente pode começar entre primeiroHorario e ultimoHorario, de intervalo em intervalo minutos.
+  // Um serviço só aparece num horário se terminar até o "fechamento".
+  diasSemana: [4, 5, 6],      // 0 = domingo ... 6 = sábado
+  primeiroHorario: '08:00',
+  ultimoHorario: '22:00',
+  fechamento: '24:00',
   intervaloMinutos: 30,
   antecedenciaMinimaHoras: 1,
 
