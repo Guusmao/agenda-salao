@@ -3136,3 +3136,65 @@ body[data-tela="view-home"] .footer { display: none; }
   .navbar-links .install-link { border: none; border-radius: 0; background: none; padding: 13px 22px; }
   .user-info-pill .user-name, .user-info-pill .user-name + span { display: inline; }
 }
+
+/* ===== Ícones de traço do painel ===== */
+.ico { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; flex-shrink: 0; font-style: normal; vertical-align: middle; }
+.ico .ico-svg, .btn-action .ico-svg, .btn-crm-lembrete .ico-svg { width: 100%; height: 100%; display: block; }
+.ico.ico-p { width: 14px; height: 14px; }
+.admin-sidenav .btn-toggle .ico { color: var(--gold-primary); width: 19px; height: 19px; }
+.admin-sidenav .btn-toggle { gap: 12px; }
+.admin-toolbar .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.admin-acoes-menu .btn { display: flex; align-items: center; gap: 10px; }
+.admin-acoes-menu .btn .ico { color: var(--gold-primary); }
+.admin-acoes-menu #btnLimparDados .ico, .admin-acoes-menu #btnCancelarDia .ico { color: #b07272; }
+.btn-crm-lembrete .ico-svg { width: 16px; height: 16px; }
+
+/* Botões de ação da agenda: todos iguais, numa linha */
+.acoes-linha { display: flex; gap: 6px; flex-wrap: nowrap; align-items: center; }
+.acoes-linha .btn-action,
+.admin-table .acoes-linha .btn-action {
+  flex: 0 0 auto; width: 34px; height: 34px; padding: 0; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 9px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-secondary);
+  font-size: 0; transition: var(--transition); filter: none;
+}
+.acoes-linha .btn-action .ico-svg { width: 17px; height: 17px; }
+.acoes-linha .btn-action:hover { border-color: var(--gold-primary); color: var(--gold-primary); background: rgba(var(--accent-rgb), 0.08); transform: none; filter: none; }
+.acoes-linha .btn-fechar { color: var(--gold-primary); border-color: var(--border-gold); background: rgba(var(--accent-rgb), 0.1); }
+.acoes-linha .btn-confirmar-realizado { color: #7d8a5f; border-color: rgba(125, 138, 95, 0.35); background: rgba(125, 138, 95, 0.08); }
+.acoes-linha .btn-delete-perm { color: #b07272; }
+.acoes-linha .btn-delete-perm:hover { border-color: #b07272; color: #b07272; background: rgba(176, 114, 114, 0.08); }
+@media (max-width: 768px) {
+  .admin-table td .acoes-linha { justify-content: center; flex-wrap: wrap; gap: 10px; }
+  .admin-table .acoes-linha .btn-action { width: 46px; height: 46px; border-radius: 12px; }
+  .acoes-linha .btn-action .ico-svg { width: 20px; height: 20px; }
+}
+
+/* ===== Status nos tons do salão ===== */
+.badge-status, .admin-table .badge-status {
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  padding: 5px 11px; border-radius: 50px; font-size: 0.75rem; font-weight: 700;
+  text-transform: none; letter-spacing: 0.2px; border: 1px solid transparent;
+}
+.status-ponto { width: 7px; height: 7px; border-radius: 50%; background: currentColor; display: inline-block; }
+.badge-agendado { background: rgba(196, 140, 58, 0.12); color: #a8742a; border-color: rgba(196, 140, 58, 0.3); }
+.badge-confirmado { background: rgba(125, 138, 95, 0.13); color: #66724a; border-color: rgba(125, 138, 95, 0.35); }
+.badge-em_atendimento, .badge-atendimento { background: rgba(140, 110, 150, 0.12); color: #7a5f86; border-color: rgba(140, 110, 150, 0.3); }
+.badge-realizado { background: #7d8a5f; color: #fff; border-color: #7d8a5f; }
+.badge-cancelado { background: rgba(176, 114, 114, 0.12); color: #a05f5f; border-color: rgba(176, 114, 114, 0.3); }
+.badge-bloqueado { background: rgba(var(--ink-rgb), 0.06); color: var(--text-secondary); border-color: var(--border-color); }
+.badge-vencido { white-space: nowrap; }
+.admin-acoes-menu .btn { justify-content: flex-start !important; text-align: left; }
+.btn-action .ico-svg, .acoes-linha svg { max-width: 20px; max-height: 20px; }
+.admin-table td[data-label="Telefone"] { white-space: nowrap; }
+@media (min-width: 769px) {
+  .admin-table .acoes-linha { display: grid; grid-template-columns: repeat(3, 34px); gap: 6px; }
+  .admin-table td[data-label="Horário"] strong { white-space: nowrap; }
+  .admin-table th, .admin-table td { padding-left: 14px; padding-right: 14px; }
+  .table-wrapper { overflow-x: auto; }
+}
+@media (min-width: 769px) {
+  .admin-table th, .admin-table td { padding-left: 10px; padding-right: 10px; }
+  .admin-table .acoes-linha { grid-template-columns: repeat(3, 30px); gap: 5px; }
+  .admin-table .acoes-linha .btn-action { width: 30px; height: 30px; border-radius: 8px; }
+  .acoes-linha .btn-action .ico-svg { width: 15px; height: 15px; }
+}

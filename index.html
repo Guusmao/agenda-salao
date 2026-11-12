@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Aline Ramos, corte feminino. Agende seu horário online.">
   <title>Aline Ramos | Agende seu horário</title>
-  <link rel="stylesheet" href="css/style.css?v=30">
+  <link rel="stylesheet" href="css/style.css?v=32">
   <link rel="stylesheet" href="css/ui-components.css?v=14">
   <link rel="icon" href="img/favicon-48.png?v=5" type="image/png" sizes="48x48">
   <link rel="manifest" href="manifest.json?v=8">
@@ -257,13 +257,13 @@
                 <button type="button" class="admin-sidenav-fechar" id="btnFecharSidenav" aria-label="Fechar menu">&times;</button>
               </div>
               <nav class="admin-view-toggle">
-                <button class="btn-toggle active" id="btnViewTable"><span class="icon">📅</span> Agenda</button>
-                <button class="btn-toggle" id="btnViewCRM"><span class="icon">📊</span> Quadro CRM</button>
-                <button class="btn-toggle" id="btnViewCaixa"><span class="icon">💵</span> Caixa e comissões</button>
-                <button class="btn-toggle" id="btnViewClientes"><span class="icon">👩</span> Clientes</button>
-                <button class="btn-toggle" id="btnViewServicos"><span class="icon">✂️</span> Serviços e preços</button>
-                <button class="btn-toggle" id="btnViewFuncionamento"><span class="icon">🗓️</span> Funcionamento</button>
-                <button class="btn-toggle" id="btnViewCancelled"><span class="icon">🚫</span> Cancelados</button>
+                <button class="btn-toggle active" id="btnViewTable"><i class="ico" data-ico="agenda"></i> Agenda</button>
+                <button class="btn-toggle" id="btnViewCRM"><i class="ico" data-ico="crm"></i> Quadro CRM</button>
+                <button class="btn-toggle" id="btnViewCaixa"><i class="ico" data-ico="caixa"></i> Caixa e comissões</button>
+                <button class="btn-toggle" id="btnViewClientes"><i class="ico" data-ico="clientes"></i> Clientes</button>
+                <button class="btn-toggle" id="btnViewServicos"><i class="ico" data-ico="servicos"></i> Serviços e preços</button>
+                <button class="btn-toggle" id="btnViewFuncionamento"><i class="ico" data-ico="relogio"></i> Funcionamento</button>
+                <button class="btn-toggle" id="btnViewCancelled"><i class="ico" data-ico="cancelados"></i> Cancelados</button>
               </nav>
             </aside>
             <div class="admin-sidenav-fundo" id="adminSidenavFundo"></div>
@@ -311,23 +311,23 @@
             <div class="admin-toolbar">
               <input type="date" id="filtroData" class="form-input" title="Filtrar por data">
               <button class="btn btn-outline btn-sm" id="btnLimparFiltro">Limpar Filtro</button>
-              <button class="btn btn-primary btn-sm" id="btnRefresh">↻ Atualizar</button>
-              <button class="btn btn-success btn-sm" id="btnNovaReserva">➕ Nova reserva</button>
+              <button class="btn btn-primary btn-sm" id="btnRefresh"><i class="ico" data-ico="atualizar"></i> Atualizar</button>
+              <button class="btn btn-success btn-sm" id="btnNovaReserva"><i class="ico" data-ico="mais"></i> Nova reserva</button>
               <div class="admin-acoes">
-                <button type="button" class="btn btn-outline btn-sm admin-acoes-btn" id="btnAcoes" aria-expanded="false">⚙️ Ações ▾</button>
+                <button type="button" class="btn btn-outline btn-sm admin-acoes-btn" id="btnAcoes" aria-expanded="false"><i class="ico" data-ico="ajustes"></i> Ações <i class="ico ico-p" data-ico="seta"></i></button>
                 <div class="admin-acoes-menu" id="adminAcoesMenu">
-              <button class="btn btn-danger btn-sm" id="btnCancelarDia">🚫 Cancelar Dia</button>
-              <button class="btn btn-lock btn-sm" id="btnBloquearDia">🔒 Bloquear Dia</button>
-              <button class="btn btn-warning btn-sm" id="btnBloquearHorario">🚫 Bloquear Horário</button>
-              <button class="btn btn-outline btn-sm" id="btnTestNotify">🔔 Testar Notificação</button>
-              <button class="btn btn-confirmar-vencidos btn-sm" id="btnConfirmarVencidos">✅ Confirmar Vencidos</button>
+              <button class="btn btn-danger btn-sm" id="btnCancelarDia"><i class="ico" data-ico="proibido"></i> Cancelar dia</button>
+              <button class="btn btn-lock btn-sm" id="btnBloquearDia"><i class="ico" data-ico="cadeado"></i> Bloquear dia</button>
+              <button class="btn btn-warning btn-sm" id="btnBloquearHorario"><i class="ico" data-ico="relogio"></i> Bloquear horário</button>
+              <button class="btn btn-outline btn-sm" id="btnTestNotify"><i class="ico" data-ico="sino"></i> Testar notificação</button>
+              <button class="btn btn-confirmar-vencidos btn-sm" id="btnConfirmarVencidos"><i class="ico" data-ico="checkDuplo"></i> Confirmar vencidos</button>
               <hr class="admin-acoes-sep">
-              <button class="btn btn-danger btn-sm" id="btnLimparDados">🧹 Limpar Todos os Dados</button>
+              <button class="btn btn-danger btn-sm" id="btnLimparDados"><i class="ico" data-ico="lixeira"></i> Limpar todos os dados</button>
                 </div>
               </div>
             </div>
             <div class="dia-bloqueado-badge" id="diaBloqueadoBadge" style="display:none;">
-              <span class="badge-locked-icon">🔒</span>
+              <i class="ico badge-locked-icon" data-ico="cadeado"></i>
               <span id="diaBloqueadoTexto">Este dia está bloqueado para agendamentos</span>
             </div>
 
@@ -617,8 +617,9 @@
   <script src="js/auth-ui.js?v=36"></script>
   <script src="js/agendamento.js?v=36"></script>
   <script src="js/meus_agendamentos.js?v=36"></script>
-  <script src="js/fechamento.js?v=37"></script>
-  <script src="js/admin.js?v=36"></script>
+  <script src="js/icones.js?v=1"></script>
+  <script src="js/fechamento.js?v=38"></script>
+  <script src="js/admin.js?v=38"></script>
   <script src="js/router.js?v=36"></script>
 
   <!-- Navbar scroll + mobile menu -->

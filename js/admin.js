@@ -3,6 +3,7 @@
 // ==========================================
 
 (function () {
+  const ICONE = window.ICONE || (() => '');
   'use strict';
 
   // --- DOM Variables ---
@@ -919,7 +920,7 @@
       diaBloqueadoBadge.style.display = 'flex';
       diaBloqueadoTexto.textContent = `${dataFormatada} está BLOQUEADO — nenhuma reserva será aceita`;
       // Botão vira "Desbloquear"
-      btnBloquearDia.innerHTML = '🔓 Desbloquear Dia';
+      btnBloquearDia.innerHTML = '<i class="ico">' + ICONE('cadeado') + '</i> Desbloquear dia';
       btnBloquearDia.classList.remove('btn-lock');
       btnBloquearDia.classList.add('btn-unlock');
     } else {
@@ -930,7 +931,7 @@
   function ocultarBadgeBloqueio() {
     diaBloqueadoAtual = false;
     diaBloqueadoBadge.style.display = 'none';
-    btnBloquearDia.innerHTML = '🔒 Bloquear Dia';
+    btnBloquearDia.innerHTML = '<i class="ico">' + ICONE('cadeado') + '</i> Bloquear dia';
     btnBloquearDia.classList.remove('btn-unlock');
     btnBloquearDia.classList.add('btn-lock');
   }
@@ -1338,15 +1339,15 @@
         </td>
         <td data-label="Data">${formatDateBR(ag.data)}</td>
         <td data-label="Horário"><strong>${escapeHTML(faixa(ag))}</strong>${vencido ? ' <span class="badge-vencido" title="Prazo vencido">VENCIDO</span>' : ''}</td>
-        <td data-label="Status"><span class="badge-status badge-${status}">${({ agendado: 'AGUARDANDO SINAL', confirmado: 'SINAL PAGO' }[status] || status.replace('_', ' ').toUpperCase())}</span></td>
+        <td data-label="Status"><span class="badge-status badge-${status}"><i class="status-ponto"></i>${({ agendado: 'Aguardando sinal', confirmado: 'Sinal pago', em_atendimento: 'Em atendimento', realizado: 'Realizado', cancelado: 'Cancelado', bloqueado: 'Bloqueado' }[status] || status)}</span></td>
         <td data-label="Ações">
-          <div style="display:flex; gap:5px; flex-wrap:wrap;">
-            ${vencido ? `<button class="btn-action btn-confirmar-realizado" data-id="${ag.id}" title="Confirmar como Realizado">✅</button>` : ''}
-            ${['agendado','confirmado','em_atendimento','realizado'].includes(status) && ag.nome !== 'HORÁRIO BLOQUEADO' ? `<button class="btn-action btn-fechar" data-id="${ag.id}" title="${status === 'realizado' ? 'Ver/editar fechamento' : 'Fechar atendimento (pagamento e comissão)'}">💰</button>` : ''}
-            <button class="btn-action btn-edit" data-id="${ag.id}" title="Editar">✏️</button>
-            ${podeLembrar(ag) ? `<a href="${linkLembrete(ag)}" target="_blank" rel="noopener" class="btn-action btn-lembrete" title="Enviar lembrete no WhatsApp">🔔</a>` : ''}
-            <a href="${generateGoogleCalendarUrl(ag)}" target="_blank" class="btn-action btn-google" title="Adicionar ao Google Agenda">📅</a>
-            <button class="btn-action btn-delete-perm" data-id="${ag.id}" title="Excluir Definitivamente">🗑️</button>
+          <div class="acoes-linha">
+            ${vencido ? `<button class="btn-action btn-confirmar-realizado" data-id="${ag.id}" title="Confirmar como realizado">${ICONE('check')}</button>` : ''}
+            ${['agendado','confirmado','em_atendimento','realizado'].includes(status) && ag.nome !== 'HORÁRIO BLOQUEADO' ? `<button class="btn-action btn-fechar" data-id="${ag.id}" title="${status === 'realizado' ? 'Ver/editar fechamento' : 'Fechar atendimento (pagamento e comissão)'}">${ICONE('dinheiro')}</button>` : ''}
+            <button class="btn-action btn-edit" data-id="${ag.id}" title="Editar">${ICONE('editar')}</button>
+            ${podeLembrar(ag) ? `<a href="${linkLembrete(ag)}" target="_blank" rel="noopener" class="btn-action btn-lembrete" title="Enviar lembrete no WhatsApp">${ICONE('sino')}</a>` : ''}
+            <a href="${generateGoogleCalendarUrl(ag)}" target="_blank" class="btn-action btn-google" title="Adicionar ao Google Agenda">${ICONE('calendarioMais')}</a>
+            <button class="btn-action btn-delete-perm" data-id="${ag.id}" title="Excluir definitivamente">${ICONE('lixeira')}</button>
           </div>
         </td>
       `;
@@ -1422,7 +1423,7 @@
             ${escapeHTML(ag.telefone)}
           </a>
         </div>
-        ${podeLembrar(ag) ? `<a href="${linkLembrete(ag)}" target="_blank" rel="noopener" class="btn-crm-lembrete">🔔 Enviar lembrete no WhatsApp</a>` : ''}
+        ${podeLembrar(ag) ? `<a href="${linkLembrete(ag)}" target="_blank" rel="noopener" class="btn-crm-lembrete">${ICONE('sino')} Enviar lembrete no WhatsApp</a>` : ''}
         <div class="crm-card-footer">
           ${nextStatus ? `
             <button class="btn-crm-action btn-crm-next" data-id="${ag.id}" data-next="${nextStatus}">
