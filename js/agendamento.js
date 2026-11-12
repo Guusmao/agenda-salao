@@ -54,7 +54,12 @@
     const primeiro = user && user.nome ? String(user.nome).trim().split(/\s+/)[0] : '';
     ola.innerHTML = '';
     const t = document.createElement('span');
-    if (!primeiro || admin) {
+    if (admin) {
+      const nomeAdmin = String(localStorage.getItem('adminNome') || '').trim().split(/\s+/)[0];
+      t.textContent = nomeAdmin && !nomeAdmin.includes('@') ? 'Olá, ' + nomeAdmin + '!' : 'Olá!';
+      ola.append(t); ola.hidden = false; return;
+    }
+    if (!primeiro) {
       t.textContent = 'Seja bem-vinda!';
       ola.append(t); ola.hidden = false; return;
     }
