@@ -2993,3 +2993,30 @@ html.tema-claro .sinal-overlay { background: rgba(62, 49, 40, 0.45); }
 @media (max-width: 1200px) {
   .user-info-pill .user-name, .user-info-pill .user-name + span { display: none; }
 }
+
+/* Cards de números no tom do salão (sem azul/verde/vermelho) */
+html.tema-claro .stat-card,
+html.tema-claro .stat-card.agendado,
+html.tema-claro .stat-card.realizado,
+html.tema-claro .stat-card.cancelado { border-left: 1px solid var(--border-color); }
+html.tema-claro .stat-card .stat-label::before {
+  content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 6px; vertical-align: middle; background: #b4893a;
+}
+html.tema-claro .stat-card.realizado .stat-label::before { background: #8c9a6e; }
+html.tema-claro .stat-card.cancelado .stat-label::before { background: #c48b8b; }
+html.tema-claro .stat-card.faturamento .stat-label::before { display: none; }
+html.tema-claro .stat-card.realizado .stat-number { color: #7d8a5f; }
+html.tema-claro .stat-card.cancelado .stat-number { color: #b07272; }
+
+/* Nova reserva em destaque dourado; Atualizar discreto */
+html.tema-claro #btnNovaReserva {
+  background: var(--gold-primary); color: #fff; border: 1px solid var(--gold-primary);
+}
+html.tema-claro #btnNovaReserva:hover { filter: brightness(1.05); box-shadow: var(--shadow-gold); }
+html.tema-claro #btnRefresh {
+  background: transparent; color: var(--gold-primary); border: 1px solid var(--border-gold, rgba(180,137,58,.4)); box-shadow: none;
+}
+@media (max-width: 900px) {
+  .admin-header { padding-top: 120px; }
+}
