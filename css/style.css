@@ -7,11 +7,16 @@
 
 /* --- CSS Variables --- */
 :root {
+  --ink-rgb: 255, 255, 255;   /* cor das camadas translúcidas por cima do fundo */
+  --shade-rgb: 10, 10, 10;
+  --nav-bg: rgba(10, 10, 10, 0.9);
+  --nav-bg-solid: rgba(15, 15, 15, 0.98);
+  --surface-grad: linear-gradient(145deg, #181818, #121212);
   --bg-primary: #0e1116;
   --bg-secondary: #151a21;
-  --bg-card: rgba(255, 255, 255, 0.04);
-  --bg-glass: rgba(255, 255, 255, 0.06);
-  --bg-glass-hover: rgba(255, 255, 255, 0.1);
+  --bg-card: rgba(var(--ink-rgb), 0.04);
+  --bg-glass: rgba(var(--ink-rgb), 0.06);
+  --bg-glass-hover: rgba(var(--ink-rgb), 0.1);
   /* Cor de destaque: o padrão fica aqui, mas cada salão define a sua
      em js/config.js (campo corDestaque), aplicada por js/config-render.js */
   --accent: #3d7eff;
@@ -26,7 +31,7 @@
   --text-primary: #f5f5f5;
   --text-secondary: #a0a0a0;
   --text-muted: #666666;
-  --border-color: rgba(255, 255, 255, 0.08);
+  --border-color: rgba(var(--ink-rgb), 0.08);
   --border-gold: rgba(var(--accent-rgb), 0.3);
   --shadow-gold: 0 0 30px rgba(var(--accent-rgb), 0.15);
   --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -159,7 +164,7 @@ section {
 }
 
 .navbar.scrolled {
-  background: rgba(10, 10, 10, 0.9);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   padding: 12px 0;
@@ -273,7 +278,7 @@ section {
   align-items: center;
   gap: 10px;
   padding: 10px 22px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(var(--ink-rgb), 0.03);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(var(--accent-rgb), 0.25);
@@ -300,7 +305,7 @@ section {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.15),
+    rgba(var(--ink-rgb), 0.15),
     transparent
   );
   transform: skewX(-20deg);
@@ -385,8 +390,8 @@ section {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(var(--ink-rgb), 0.06);
+  border: 1px solid rgba(var(--ink-rgb), 0.1);
   color: var(--text-secondary);
   display: flex;
   align-items: center;
@@ -489,7 +494,7 @@ section {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(10,10,10,0.3) 0%, var(--bg-primary) 100%);
+  background: linear-gradient(180deg, rgba(var(--shade-rgb),0.3) 0%, var(--bg-primary) 100%);
 }
 
 .hero-content {
@@ -905,7 +910,7 @@ section {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(var(--ink-rgb), 0.04);
   border-radius: var(--radius-sm);
   flex-shrink: 0;
 }
@@ -1036,7 +1041,7 @@ section {
 .form-select {
   width: 100%;
   padding: 14px 18px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(var(--ink-rgb), 0.04);
   border: 1.5px solid var(--border-color);
   border-radius: var(--radius-md);
   color: var(--text-primary);
@@ -1056,26 +1061,26 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(var(--ink-rgb), 0.1);
 }
 
 .form-input:focus,
 .form-select:focus {
   border-color: var(--gold-primary);
   box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(var(--ink-rgb), 0.06);
 }
 
 .form-input:read-only,
 .form-input:disabled {
   opacity: 0.7;
   cursor: not-allowed;
-  background: rgba(255, 255, 255, 0.02);
-  border-color: rgba(255, 255, 255, 0.05);
+  background: rgba(var(--ink-rgb), 0.02);
+  border-color: rgba(var(--ink-rgb), 0.05);
 }
 
 .form-input:read-only:focus {
-  border-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(var(--ink-rgb), 0.05);
   box-shadow: none;
 }
 
@@ -1117,7 +1122,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .service-item {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(var(--ink-rgb), 0.04);
   border: 1.5px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: 16px 12px;
@@ -1208,7 +1213,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .time-slot {
   padding: 12px 8px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(var(--ink-rgb), 0.04);
   border: 1.5px solid var(--border-color);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
@@ -1582,7 +1587,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     transform: translateX(-50%) translateY(-10px) scale(0.95);
     width: calc(100% - 40px);
     max-width: 350px;
-    background: rgba(15, 15, 15, 0.98);
+    background: var(--nav-bg-solid);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
     border: 1px solid var(--border-gold);
@@ -1700,7 +1705,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 
   .admin-table td {
     padding: 18px 24px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(var(--ink-rgb), 0.05);
     font-size: 1.05rem;
     text-align: center;
     gap: 8px;
@@ -1709,7 +1714,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   .admin-table td:last-child {
     border-bottom: none;
     padding-top: 24px;
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(var(--ink-rgb), 0.02);
     margin: 0 -24px -24px;
     border-radius: 0 0 var(--radius-lg) var(--radius-lg);
     padding-bottom: 24px;
@@ -2128,7 +2133,7 @@ tr.row-vencido {
 }
 
 .modal-close {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(var(--ink-rgb), 0.06);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
   font-size: 1.5rem;
@@ -2414,7 +2419,7 @@ tr.row-vencido {
 }
 
 .crm-column {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--ink-rgb), 0.02);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 16px;
@@ -2437,7 +2442,7 @@ tr.row-vencido {
   font-size: 0.85rem;
   color: var(--text-primary);
   padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(var(--ink-rgb), 0.03);
   border-bottom: 1px solid var(--border-color);
   margin: -16px -16px 16px -16px;
   display: flex;
@@ -2461,8 +2466,8 @@ tr.row-vencido {
 
 /* CRM Card */
 .crm-card {
-  background: linear-gradient(145deg, #181818, #121212);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--surface-grad);
+  border: 1px solid rgba(var(--ink-rgb), 0.05);
   border-radius: 20px;
   padding: 24px;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -2540,8 +2545,8 @@ tr.row-vencido {
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(var(--ink-rgb), 0.03);
+  border: 1px solid rgba(var(--ink-rgb), 0.05);
   border-radius: 50px;
   color: var(--text-secondary);
   font-size: 0.9rem;
@@ -2570,7 +2575,7 @@ tr.row-vencido {
 .crm-card-footer {
   margin-top: 8px;
   padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(var(--ink-rgb), 0.05);
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 10px;
@@ -2580,8 +2585,8 @@ tr.row-vencido {
   padding: 12px 8px;
   font-size: 0.7rem;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(var(--ink-rgb), 0.08);
+  background: rgba(var(--ink-rgb), 0.02);
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.3s ease;
@@ -2595,7 +2600,7 @@ tr.row-vencido {
 }
 
 .btn-crm-action:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(var(--ink-rgb), 0.08);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
@@ -2788,7 +2793,7 @@ tr.row-vencido {
 .clientes-total { color: var(--text-secondary, #aaa); font-size: 0.85rem; }
 .clientes-vazio { color: var(--text-secondary, #aaa); padding: 20px 0; }
 .clientes-lista { display: flex; flex-direction: column; gap: 10px; }
-.cliente-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 16px; }
+.cliente-card { background: rgba(var(--ink-rgb),0.03); border: 1px solid rgba(var(--ink-rgb),0.08); border-radius: 12px; padding: 12px 16px; }
 .cliente-card[open] { border-color: rgba(var(--accent-rgb), 0.5); }
 .cliente-card summary { cursor: pointer; display: flex; flex-direction: column; gap: 2px; list-style: none; }
 .cliente-card summary::-webkit-details-marker { display: none; }
@@ -2808,7 +2813,7 @@ tr.row-vencido {
 .variacao-titulo { display: block; font-size: 0.8rem; color: var(--text-secondary, #aaa); margin-bottom: 8px; }
 .variacao-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .variacao-chip { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 14px; border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--text-primary); font: inherit; font-size: 0.85rem; cursor: pointer; }
+  border: 1px solid rgba(var(--ink-rgb),0.12); background: rgba(var(--ink-rgb),0.03); color: var(--text-primary); font: inherit; font-size: 0.85rem; cursor: pointer; }
 .variacao-chip small { color: var(--accent); font-weight: 700; }
 .variacao-chip.selected { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.12); }
 
@@ -2817,22 +2822,22 @@ tr.row-vencido {
 #servicosAdminLista { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
 .sv-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .sv-var { display: grid; grid-template-columns: 1fr 110px 36px; gap: 8px; margin-top: 6px; }
-.sv-var-del { background: none; border: 1px solid rgba(255,255,255,0.15); color: var(--text-secondary, #aaa); border-radius: 8px; font-size: 1.1rem; cursor: pointer; }
+.sv-var-del { background: none; border: 1px solid rgba(var(--ink-rgb),0.15); color: var(--text-secondary, #aaa); border-radius: 8px; font-size: 1.1rem; cursor: pointer; }
 .sv-checks { display: flex; flex-direction: column; gap: 6px; }
 .sv-checks label { flex-direction: row !important; align-items: center; gap: 8px !important; }
 
 /* ---------- Funcionamento (painel) ---------- */
 .fn-card { margin-bottom: 12px; }
 .fn-dias { display: flex; flex-wrap: wrap; gap: 8px; }
-.fn-dia { flex-direction: row !important; align-items: center; gap: 6px !important; padding: 6px 10px; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; text-transform: capitalize; color: var(--text-primary) !important; }
+.fn-dia { flex-direction: row !important; align-items: center; gap: 6px !important; padding: 6px 10px; border: 1px solid rgba(var(--ink-rgb),0.12); border-radius: 8px; text-transform: capitalize; color: var(--text-primary) !important; }
 .fn-del { width: 28px; height: 28px; margin-left: 8px; }
 
 /* ---------- Sinal pelo Pix ---------- */
 .sinal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 3000; }
-.sinal-card { background: #16191f; border: 1px solid rgba(var(--accent-rgb), 0.35); border-radius: 16px; padding: 24px 20px; max-width: 420px; width: 100%; display: flex; flex-direction: column; gap: 14px; }
+.sinal-card { background: var(--bg-secondary); border: 1px solid rgba(var(--accent-rgb), 0.35); border-radius: 16px; padding: 24px 20px; max-width: 420px; width: 100%; display: flex; flex-direction: column; gap: 14px; }
 .sinal-card h3 { margin: 0; font-size: 1.3rem; color: var(--text-primary); }
 .sinal-card p { margin: 0; color: var(--text-secondary, #bbb); font-size: 0.92rem; line-height: 1.5; }
-.sinal-chave { display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.04); }
+.sinal-chave { display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 12px; background: rgba(var(--ink-rgb),0.04); }
 .sinal-chave span { font-size: 0.75rem; color: var(--text-secondary, #aaa); }
 .sinal-chave code { font-size: 1rem; color: var(--accent-light); word-break: break-all; }
 .sinal-regra { font-size: 0.8rem !important; }
@@ -2844,3 +2849,29 @@ tr.row-vencido {
 .navbar-brand.navbar-brand-logo { background: none; animation: none; -webkit-text-fill-color: initial; display: flex; align-items: center; line-height: 0; }
 .navbar-brand-logo img { height: 64px; width: auto; display: block; }
 @media (max-width: 768px) { .navbar-brand-logo img { height: 50px; } }
+
+/* ==========================================
+   Tema claro (nude e dourado): <html class="tema-claro">, ligado por "tema" no config.js
+   ========================================== */
+html.tema-claro {
+  --ink-rgb: 74, 56, 40;
+  --shade-rgb: 250, 246, 240;
+  --bg-primary: #faf6f0;
+  --bg-secondary: #f2ebe1;
+  --bg-card: rgba(255, 255, 255, 0.75);
+  --bg-glass: rgba(255, 255, 255, 0.6);
+  --bg-glass-hover: rgba(255, 255, 255, 0.9);
+  --nav-bg: rgba(250, 246, 240, 0.92);
+  --nav-bg-solid: rgba(250, 246, 240, 0.98);
+  --surface-grad: linear-gradient(145deg, #ffffff, #f7f1e8);
+  --ui-bg-tema: rgba(255, 255, 255, 0.95);
+  --text-primary: #3e3128;
+  --text-secondary: #7a6858;
+  --text-muted: #a8988a;
+  --border-color: rgba(74, 56, 40, 0.12);
+  --shadow-card: 0 8px 28px rgba(120, 90, 50, 0.10);
+  color-scheme: light;
+}
+html.tema-claro body { background: var(--bg-primary); color: var(--text-primary); }
+html.tema-claro .form-input, html.tema-claro input, html.tema-claro select, html.tema-claro textarea { color: var(--text-primary); background-color: #fff; }
+html.tema-claro .sinal-overlay { background: rgba(62, 49, 40, 0.45); }

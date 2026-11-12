@@ -15,7 +15,8 @@ window.APP_CONFIG = {
   marca: 'Aline Ramos',                 // Texto do logo no menu superior
   logoHero: 'img/logo-aline-ramos.png?v=1',
   logoMenu: 'img/logo-aline-ramos.png?v=1',  // Logo no lugar do nome no menu (apague a linha para voltar ao texto)     // Coloque o logo do salão em img/ e troque aqui
-  corDestaque: '#d4ab57',               // Cor dos botões, preços e detalhes (formato #rrggbb)
+  tema: 'claro',                        // 'claro' (nude e dourado) ou 'escuro'
+  corDestaque: '#b4893a',               // Cor dos botões, preços e detalhes (formato #rrggbb)
   tituloPagina: 'Aline Ramos | Agende seu horário',
   descricaoPagina: 'Aline Ramos, especialista em corte feminino. Agende seu horário online.',
   textoCatalogo: 'Corte, cor, luzes e tratamentos. Confira tudo o que oferecemos.',

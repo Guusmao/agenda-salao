@@ -184,6 +184,7 @@
     raiz.setProperty('--on-accent', luminancia > 0.6 ? '#0e1116' : '#ffffff');
   }
   aplicarCor(cfg.corDestaque);
+  if (cfg.tema) document.documentElement.classList.add('tema-' + cfg.tema);
 
   // --- Textos ---
   document.title = cfg.tituloPagina;
