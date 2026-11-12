@@ -3029,3 +3029,4 @@ html.tema-claro #btnRefresh {
 .hero-ola-trocar { margin-top: 4px; }
 @media (max-width: 768px) { .hero-content .hero-ola { font-size: 1.4rem; } }
 .hero-ola-sub { font-family: var(--font-body, inherit); font-size: 1rem; font-weight: 500; color: var(--text-secondary); }
+#installBtn, .btn-install, .btn-install:hover { color: #fff !important; }
