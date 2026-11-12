@@ -86,8 +86,25 @@
 
     // Só entra no painel quem fez login e está cadastrado na tabela "admins".
     // O banco confere isso de novo em cada consulta, então esta checagem é só visual.
+    // Logo depois do login o token novo pode demorar um instante para valer
+    // (e o banco pode estar "acordando"), então tenta algumas vezes antes de recusar.
+    async function conferirAdmin(tentativas) {
+      for (let i = 0; i < tentativas; i++) {
+        try {
+          if (i > 0) {
+            await new Promise(r => setTimeout(r, 700 * i));
+            try { await window.db.auth.getSession(); } catch (e) {}
+          }
+          const { data, error } = await window.db.rpc('is_admin');
+          if (!error && data === true) return true;
+        } catch (e) {}
+      }
+      return false;
+    }
+
     async function entrarSeForAdmin(mostrarErro) {
-      const { data: isAdmin, error } = await window.db.rpc('is_admin');
+      const isAdmin = await conferirAdmin(mostrarErro ? 5 : 3);
+      const error = null;
       if (!error && isAdmin === true) {
         localStorage.setItem('adminAuth', 'true');
         try {
@@ -115,12 +132,21 @@
         e.preventDefault();
         const email = document.getElementById('adminUser').value.trim();
         const password = document.getElementById('adminPass').value;
-        const { error } = await window.db.auth.signIn.email({ email, password });
-        if (error) {
-          showToast('E-mail ou senha incorretos.', 'error');
-          return;
+        const botao = adminLoginForm.querySelector('button[type="submit"]');
+        const textoBotao = botao ? botao.textContent : '';
+        if (botao) { if (botao.disabled) return; botao.disabled = true; botao.textContent = 'Entrando...'; }
+        try {
+          const { error } = await window.db.auth.signIn.email({ email, password });
+          if (error) {
+            showToast('E-mail ou senha incorretos.', 'error');
+            return;
+          }
+          if (await entrarSeForAdmin(true)) showToast('Autenticado com sucesso!', 'success');
+        } catch (err) {
+          showToast('Não foi possível conectar. Tente de novo.', 'error');
+        } finally {
+          if (botao) { botao.disabled = false; botao.textContent = textoBotao; }
         }
-        if (await entrarSeForAdmin(true)) showToast('Autenticado com sucesso!', 'success');
       });
     }
 
