@@ -10,7 +10,7 @@
   let statAgendados, statRealizados, statCancelados, statHoje;
   let statRealizadosMes, statAgendadosMes, statCanceladosMes, statFaturamento;
   let tableView, crmView, cancelledView;
-  let btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes, clientesView, btnViewServicos, servicosAdminView, btnViewFuncionamento, funcionamentoView;
+  let btnViewCaixa, caixaView, btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes, clientesView, btnViewServicos, servicosAdminView, btnViewFuncionamento, funcionamentoView;
   let cancelledGrid, cancelledEmptyState;
   let modalBookingId, modalTitle, cardAgendadosTotal;
   let btnBloquearHorario, adminHorariosContainer, adminTimeSlotsGrid, btnCloseAdminHorarios;
@@ -48,6 +48,8 @@
     crmView = document.getElementById('crmView');
     cancelledView = document.getElementById('cancelledView');
     btnViewTable = document.getElementById('btnViewTable');
+    btnViewCaixa = document.getElementById('btnViewCaixa');
+    caixaView = document.getElementById('caixaView');
     btnViewCRM = document.getElementById('btnViewCRM');
     btnViewCancelled = document.getElementById('btnViewCancelled');
     btnViewClientes = document.getElementById('btnViewClientes');
@@ -315,6 +317,7 @@
     if (btnViewClientes) btnViewClientes.addEventListener('click', () => switchView('clientes'));
     if (btnViewServicos) btnViewServicos.addEventListener('click', () => switchView('servicos'));
     if (btnViewFuncionamento) btnViewFuncionamento.addEventListener('click', () => switchView('funcionamento'));
+    if (btnViewCaixa) btnViewCaixa.addEventListener('click', () => switchView('caixa'));
     const fnSalvar = document.getElementById('fnSalvar');
     if (fnSalvar) fnSalvar.addEventListener('click', salvarFuncionamento);
     const fnAdd = document.getElementById('fnAddData');
@@ -468,7 +471,7 @@
     }
   }
 
-  const NOMES_SECAO = { table: 'Agenda', crm: 'Quadro CRM', cancelled: 'Cancelados', clientes: 'Clientes', servicos: 'Serviços e preços', funcionamento: 'Funcionamento' };
+  const NOMES_SECAO = { table: 'Agenda', crm: 'Quadro CRM', cancelled: 'Cancelados', clientes: 'Clientes', servicos: 'Serviços e preços', funcionamento: 'Funcionamento', caixa: 'Caixa e comissões' };
 
   // Menu lateral do painel (gaveta no celular) e menu de Ações
   function ligarMenuPainel() {
@@ -508,7 +511,7 @@
     if (rotulo) rotulo.textContent = NOMES_SECAO[view] || 'Agenda';
 
     // Reset buttons
-    [btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes, btnViewServicos, btnViewFuncionamento].forEach(btn => {
+    [btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes, btnViewServicos, btnViewFuncionamento, btnViewCaixa].forEach(btn => {
       if (btn) btn.classList.remove('active');
     });
 
@@ -519,6 +522,7 @@
     if (clientesView) clientesView.style.display = 'none';
     if (servicosAdminView) servicosAdminView.style.display = 'none';
     if (funcionamentoView) funcionamentoView.style.display = 'none';
+    if (caixaView) caixaView.style.display = 'none';
 
     if (view === 'table') {
       tableView.style.display = 'block';
@@ -539,6 +543,10 @@
       servicosAdminView.style.display = 'block';
       btnViewServicos.classList.add('active');
       carregarServicosAdmin();
+    } else if (view === 'caixa' && caixaView) {
+      caixaView.style.display = 'block';
+      btnViewCaixa.classList.add('active');
+      if (window.Fechamento) window.Fechamento.carregarCaixa();
     } else if (view === 'funcionamento' && funcionamentoView) {
       funcionamentoView.style.display = 'block';
       btnViewFuncionamento.classList.add('active');
@@ -1246,7 +1254,7 @@
 
       const { data: allData, error: allErr } = await window.db
         .from('agendamentos')
-        .select('data, status, servico');
+        .select('id, data, status, servico');
 
       if (!allErr && allData) {
         // Totais Gerais
@@ -1266,10 +1274,12 @@
         statCanceladosMes.textContent = agendamentosMes.filter(a => a.status === 'cancelado').length;
 
         // Faturamento (apenas realizados)
+        // Usa o valor do fechamento quando existe; senão, o preço da tabela
+        const fechados = window.Fechamento ? await window.Fechamento.totaisFechados() : null;
         const faturamentoTotal = allData
           .filter(a => a.status === 'realizado')
           .reduce((acc, a) => {
-            const preco = PRECOS_SERVICOS[a.servico] || 0;
+            const preco = fechados && fechados[a.id] != null ? fechados[a.id] : (PRECOS_SERVICOS[a.servico] || 0);
             return acc + preco;
           }, 0);
 
@@ -1278,6 +1288,14 @@
     } catch (err) {
       console.warn('Stats load failed:', err);
     }
+  }
+
+  function abrirFechamento(ag) {
+    if (!window.Fechamento) return;
+    window.Fechamento.abrir(ag, () => {
+      loadAgendamentos(filtroData ? filtroData.value : undefined);
+      loadStats();
+    });
   }
 
   // --- Render table ---
@@ -1324,6 +1342,7 @@
         <td data-label="Ações">
           <div style="display:flex; gap:5px; flex-wrap:wrap;">
             ${vencido ? `<button class="btn-action btn-confirmar-realizado" data-id="${ag.id}" title="Confirmar como Realizado">✅</button>` : ''}
+            ${['agendado','confirmado','em_atendimento','realizado'].includes(status) && ag.nome !== 'HORÁRIO BLOQUEADO' ? `<button class="btn-action btn-fechar" data-id="${ag.id}" title="${status === 'realizado' ? 'Ver/editar fechamento' : 'Fechar atendimento (pagamento e comissão)'}">💰</button>` : ''}
             <button class="btn-action btn-edit" data-id="${ag.id}" title="Editar">✏️</button>
             ${podeLembrar(ag) ? `<a href="${linkLembrete(ag)}" target="_blank" rel="noopener" class="btn-action btn-lembrete" title="Enviar lembrete no WhatsApp">🔔</a>` : ''}
             <a href="${generateGoogleCalendarUrl(ag)}" target="_blank" class="btn-action btn-google" title="Adicionar ao Google Agenda">📅</a>
@@ -1333,6 +1352,7 @@
       `;
 
       tr.querySelector('.btn-edit').addEventListener('click', () => abrirModal(ag));
+      tr.querySelector('.btn-fechar')?.addEventListener('click', () => abrirFechamento(ag));
       tr.querySelector('.btn-delete-perm').addEventListener('click', () => excluirAgendamento(ag.id));
       tr.querySelector('.btn-confirmar-realizado')?.addEventListener('click', () => confirmarRealizado(ag.id));
 
@@ -1420,7 +1440,8 @@
 
       card.querySelector('.btn-crm-edit').addEventListener('click', () => abrirModal(ag));
       card.querySelector('.btn-crm-delete-perm')?.addEventListener('click', () => excluirAgendamento(ag.id));
-      card.querySelector('.btn-crm-next')?.addEventListener('click', () => updateStatus(ag.id, nextStatus));
+      card.querySelector('.btn-crm-next')?.addEventListener('click', () =>
+        nextStatus === 'realizado' ? abrirFechamento(ag) : updateStatus(ag.id, nextStatus));
       card.querySelector('.btn-crm-cancel')?.addEventListener('click', () => updateStatus(ag.id, 'cancelado'));
 
       columns[status].appendChild(card);

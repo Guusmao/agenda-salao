@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Aline Ramos, corte feminino. Agende seu horário online.">
   <title>Aline Ramos | Agende seu horário</title>
-  <link rel="stylesheet" href="css/style.css?v=27">
+  <link rel="stylesheet" href="css/style.css?v=29">
   <link rel="stylesheet" href="css/ui-components.css?v=14">
   <link rel="icon" href="img/favicon-48.png?v=5" type="image/png" sizes="48x48">
   <link rel="manifest" href="manifest.json?v=8">
@@ -259,6 +259,7 @@
               <nav class="admin-view-toggle">
                 <button class="btn-toggle active" id="btnViewTable"><span class="icon">📅</span> Agenda</button>
                 <button class="btn-toggle" id="btnViewCRM"><span class="icon">📊</span> Quadro CRM</button>
+                <button class="btn-toggle" id="btnViewCaixa"><span class="icon">💵</span> Caixa e comissões</button>
                 <button class="btn-toggle" id="btnViewClientes"><span class="icon">👩</span> Clientes</button>
                 <button class="btn-toggle" id="btnViewServicos"><span class="icon">✂️</span> Serviços e preços</button>
                 <button class="btn-toggle" id="btnViewFuncionamento"><span class="icon">🗓️</span> Funcionamento</button>
@@ -469,6 +470,22 @@
             </div>
 
             <!-- Clientes: histórico, aniversário e observações -->
+            <div class="servicos-admin-view" id="caixaView" style="display: none;">
+              <div class="caixa-topo">
+                <label for="caixaMes">Mês</label>
+                <input type="month" id="caixaMes" class="form-input">
+              </div>
+              <div class="caixa-resumo" id="caixaResumo"></div>
+              <h3 class="caixa-titulo">Comissões das auxiliares</h3>
+              <div id="caixaComissoes"></div>
+              <h3 class="caixa-titulo">Auxiliares</h3>
+              <p class="caixa-ajuda">Quem aparece no "Feito por" quando você fecha um atendimento. A comissão de cada serviço é a da aba Serviços e preços.</p>
+              <div id="auxiliaresLista"></div>
+              <div class="aux-nova">
+                <input type="text" id="novaAuxiliarNome" class="form-input" placeholder="Nome da auxiliar" maxlength="60">
+                <button type="button" class="btn btn-primary btn-sm" id="btnNovaAuxiliar">+ Cadastrar</button>
+              </div>
+            </div>
             <div class="clientes-view" id="clientesView" style="display: none;">
               <div class="clientes-toolbar">
                 <input type="search" id="clientesBusca" class="form-input" placeholder="Buscar por nome ou telefone">
@@ -592,16 +609,17 @@
   <!-- Cliente do banco (Neon), gerado com: npx esbuild (ver README) -->
   <script src="js/vendor/neon-js-0.10.2.min.js"></script>
   <!-- App Scripts -->
-  <script src="js/config.js?v=35"></script>
-  <script src="js/config-render.js?v=35"></script>
-  <script src="js/ui-components.js?v=35"></script>
-  <script src="js/db.js?v=35"></script>
-  <script src="js/auth.js?v=35"></script>
-  <script src="js/auth-ui.js?v=35"></script>
-  <script src="js/agendamento.js?v=35"></script>
-  <script src="js/meus_agendamentos.js?v=35"></script>
-  <script src="js/admin.js?v=35"></script>
-  <script src="js/router.js?v=35"></script>
+  <script src="js/config.js?v=36"></script>
+  <script src="js/config-render.js?v=36"></script>
+  <script src="js/ui-components.js?v=36"></script>
+  <script src="js/db.js?v=36"></script>
+  <script src="js/auth.js?v=36"></script>
+  <script src="js/auth-ui.js?v=36"></script>
+  <script src="js/agendamento.js?v=36"></script>
+  <script src="js/meus_agendamentos.js?v=36"></script>
+  <script src="js/fechamento.js?v=37"></script>
+  <script src="js/admin.js?v=36"></script>
+  <script src="js/router.js?v=36"></script>
 
   <!-- Navbar scroll + mobile menu -->
   <script>

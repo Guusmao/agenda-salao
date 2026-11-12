@@ -2912,7 +2912,9 @@ html.tema-claro .sinal-overlay { background: rgba(62, 49, 40, 0.45); }
 #adminDashboard[data-view="funcionamento"] .admin-stats,
 #adminDashboard[data-view="clientes"] .admin-toolbar,
 #adminDashboard[data-view="servicos"] .admin-toolbar,
-#adminDashboard[data-view="funcionamento"] .admin-toolbar { display: none; }
+#adminDashboard[data-view="funcionamento"] .admin-toolbar,
+#adminDashboard[data-view="caixa"] .admin-stats,
+#adminDashboard[data-view="caixa"] .admin-toolbar { display: none; }
 
 .admin-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
 .stat-card { padding: 14px 12px; }
@@ -2986,9 +2988,10 @@ html.tema-claro .sinal-overlay { background: rgba(62, 49, 40, 0.45); }
 .admin-stats-mais { display: none; width: 100%; margin: -10px 0 18px; background: none; border: none; color: var(--gold-primary); font-weight: 600; font-size: 0.85rem; cursor: pointer; padding: 6px; }
 #adminDashboard[data-view="clientes"] .admin-stats-mais,
 #adminDashboard[data-view="servicos"] .admin-stats-mais,
-#adminDashboard[data-view="funcionamento"] .admin-stats-mais { display: none; }
+#adminDashboard[data-view="funcionamento"] .admin-stats-mais,
+#adminDashboard[data-view="caixa"] .admin-stats-mais { display: none; }
 @media (max-width: 900px) {
-  #adminDashboard:not([data-view="clientes"]):not([data-view="servicos"]):not([data-view="funcionamento"]) .admin-stats-mais { display: block; }
+  #adminDashboard:not([data-view="clientes"]):not([data-view="servicos"]):not([data-view="funcionamento"]):not([data-view="caixa"]) .admin-stats-mais { display: block; }
 }
 @media (max-width: 1200px) {
   .user-info-pill .user-name, .user-info-pill .user-name + span { display: none; }
@@ -3050,3 +3053,63 @@ html.tema-claro #btnRefresh {
 .secao-agendar { padding-top: 130px !important; min-height: 100vh; }
 @media (max-width: 768px) { .secao-agendar { padding-top: 110px !important; } }
 body[data-tela="view-home"] .footer { display: none; }
+
+/* ===== Fechamento do atendimento ===== */
+.fech-card { max-width: 560px; padding: 28px 24px; }
+.fech-cliente { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
+.fech-cliente strong { font-size: 1.1rem; color: var(--text-primary); }
+.fech-cliente span { color: var(--text-secondary); font-size: 0.85rem; }
+.fech-secao { margin: 18px 0 10px; font-family: var(--font-heading); font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-primary); }
+.fech-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+.fech-item-topo { display: flex; gap: 8px; align-items: center; }
+.fech-item-topo .fech-serv { flex: 1; min-width: 0; }
+.fech-remover { background: none; border: none; font-size: 1.4rem; color: var(--text-muted); cursor: pointer; padding: 0 6px; }
+.fech-item-dados { display: grid; grid-template-columns: 130px 1fr; gap: 8px; }
+.fech-moeda { position: relative; }
+.fech-moeda span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; }
+.fech-moeda .form-input { padding-left: 38px; }
+.fech-comissao { font-size: 0.82rem; color: #7d8a5f; font-weight: 600; }
+.fech-comissao[hidden] { display: none; }
+.fech-add { background: none; border: 1px dashed var(--border-gold); color: var(--gold-primary); border-radius: var(--radius-md); padding: 10px; width: 100%; font-weight: 700; cursor: pointer; }
+.fech-linha { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 6px 0; color: var(--text-secondary); }
+.fech-linha strong { color: var(--text-primary); font-size: 1.05rem; }
+.fech-linha .fech-moeda { width: 140px; }
+.fech-falta { border-top: 1px solid var(--border-color); margin-top: 4px; padding-top: 10px; }
+.fech-falta strong { color: var(--gold-primary); font-size: 1.25rem; }
+.fech-formas { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.fech-forma { border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); border-radius: 50px; padding: 8px 14px; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+.fech-forma.ativa { background: var(--gold-primary); border-color: var(--gold-primary); color: #fff; }
+.fech-parcelas { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.fech-parcelas[hidden] { display: none; }
+.fech-parcelas label, .fech-obs-label { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); }
+.fech-parcelas small { color: var(--text-muted); font-size: 0.78rem; }
+.fech-obs-label { display: block; margin: 8px 0 6px; }
+@media (max-width: 480px) { .fech-card { padding: 22px 16px; } .fech-item-dados { grid-template-columns: 1fr; } }
+
+/* ===== Caixa e comissões ===== */
+.caixa-topo { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.caixa-topo label { font-weight: 700; color: var(--text-secondary); }
+.caixa-topo .form-input { max-width: 200px; }
+.caixa-resumo { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-bottom: 24px; }
+.caixa-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; display: flex; flex-direction: column; gap: 4px; }
+.caixa-card span { font-size: 0.78rem; color: var(--text-secondary); }
+.caixa-card strong { font-family: var(--font-heading); font-size: 1.3rem; color: var(--text-primary); }
+.caixa-card small { font-size: 0.75rem; color: var(--text-muted); }
+.caixa-card.destaque { grid-column: 1 / -1; background: rgba(var(--accent-rgb), 0.1); border-color: var(--border-gold); }
+.caixa-card.destaque strong { color: var(--gold-primary); }
+.caixa-titulo { font-size: 1.05rem; margin: 22px 0 10px; }
+.caixa-ajuda, .caixa-vazio { color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 12px; }
+.comissao-grupo { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 10px; overflow: hidden; }
+.comissao-grupo summary { display: flex; align-items: center; gap: 10px; padding: 14px 16px; cursor: pointer; list-style: none; }
+.comissao-grupo summary::-webkit-details-marker { display: none; }
+.comissao-nome { font-weight: 700; color: var(--text-primary); }
+.comissao-qtd { color: var(--text-muted); font-size: 0.82rem; flex: 1; }
+.comissao-grupo summary strong { color: var(--gold-primary); font-size: 1.1rem; }
+.comissao-lista { border-top: 1px solid var(--border-color); padding: 6px 16px 10px; }
+.comissao-item { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--border-color); font-size: 0.88rem; }
+.comissao-item:last-child { border-bottom: none; }
+.comissao-item small { display: block; color: var(--text-muted); font-size: 0.78rem; }
+.aux-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; margin-bottom: 8px; }
+.aux-row.inativa .form-input { opacity: 0.55; }
+.aux-ativa { display: flex; align-items: center; gap: 4px; font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap; }
+.aux-nova { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 10px; }
