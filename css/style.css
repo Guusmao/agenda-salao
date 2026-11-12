@@ -3023,3 +3023,9 @@ html.tema-claro #btnRefresh {
 .hero-ola { margin: 0 0 14px; font-family: var(--font-heading); font-weight: 700; font-size: 1.1rem; color: var(--gold-primary); display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .hero-ola[hidden] { display: none; }
 .hero-ola-trocar { background: none; border: none; color: var(--text-muted); font-size: 0.8rem; font-weight: 500; text-decoration: underline; cursor: pointer; padding: 2px; }
+/* Logo só no menu; no início entra a saudação */
+#heroLogo { display: none !important; }
+.hero-content .hero-ola { font-size: 1.6rem; line-height: 1.25; margin-bottom: 18px; color: var(--gold-primary); text-align: center; }
+.hero-ola-trocar { margin-top: 4px; }
+@media (max-width: 768px) { .hero-content .hero-ola { font-size: 1.4rem; } }
+.hero-ola-sub { font-family: var(--font-body, inherit); font-size: 1rem; font-weight: 500; color: var(--text-secondary); }

@@ -52,14 +52,20 @@
     const user = window.Auth && window.Auth.isLoggedIn() ? window.Auth.getUser() : null;
     const admin = localStorage.getItem('adminAuth') === 'true';
     const primeiro = user && user.nome ? String(user.nome).trim().split(/\s+/)[0] : '';
-    if (!primeiro || admin) { ola.hidden = true; return; }
     ola.innerHTML = '';
     const t = document.createElement('span');
-    t.textContent = 'Olá, ' + primeiro + '! Que bom te ver de novo.';
+    if (!primeiro || admin) {
+      t.textContent = 'Seja bem-vinda!';
+      ola.append(t); ola.hidden = false; return;
+    }
+    t.textContent = 'Olá, ' + primeiro + '!';
+    const sub = document.createElement('small');
+    sub.className = 'hero-ola-sub';
+    sub.textContent = 'Que bom te ver de novo.';
     const troca = document.createElement('button');
     troca.type = 'button'; troca.className = 'hero-ola-trocar'; troca.textContent = 'Não é você?';
     troca.addEventListener('click', () => window.Auth.logout());
-    ola.append(t, troca);
+    ola.append(t, sub, troca);
     ola.hidden = false;
   }
 
