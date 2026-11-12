@@ -19,10 +19,10 @@
   --bg-glass-hover: rgba(var(--ink-rgb), 0.1);
   /* Cor de destaque: o padrão fica aqui, mas cada salão define a sua
      em js/config.js (campo corDestaque), aplicada por js/config-render.js */
-  --accent: #3d7eff;
-  --accent-rgb: 61, 126, 255;
-  --accent-light: #6e9fff;
-  --accent-dark: #2a5fcc;
+  --accent: #b4893a;
+  --accent-rgb: 180, 137, 58;
+  --accent-light: #c7a76b;
+  --accent-dark: #906e2e;
   --on-accent: #ffffff;
   --gold-primary: var(--accent);
   --gold-light: var(--accent-light);

@@ -1,9 +1,9 @@
 // ==========================================
-// Service Worker - Agendaí Beauty
+// Service Worker - Aline Ramos
 // Versão com suporte a Push Notifications
 // ==========================================
 
-const CACHE_NAME = 'salao-cache-v7';
+const CACHE_NAME = 'salao-cache-v8';
 const urlsToCache = [
   './',
   './index.html',
