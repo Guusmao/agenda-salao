@@ -127,12 +127,12 @@
         ? name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
         : '?';
       
-      const roleBadge = isAdmin ? `<span style="font-size: 0.65rem; background: var(--gold-primary); color: var(--on-accent); padding: 1px 5px; border-radius: 4px; margin-left: 6px; font-weight: 800; vertical-align: middle;">ADMIN</span>` : '';
+      const roleBadge = isAdmin ? `<span style="font-size: 0.65rem; background: var(--gold-primary); color: var(--on-accent); padding: 1px 5px; border-radius: 4px; margin-left: 2px; font-weight: 800; vertical-align: middle; flex-shrink: 0;">ADMIN</span>` : '';
 
       userProfile.innerHTML = `
         <div class="user-info-pill">
           <div class="user-avatar">${initials}</div>
-          <span class="user-name">${name}${roleBadge}</span>
+          <span class="user-name" title="${name}">${name.split(' ')[0]}</span>${roleBadge}
           <button class="btn-logout" id="btnLogout" title="Sair">
             ✕
           </button>
