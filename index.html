@@ -628,7 +628,12 @@
         if (targetId === '#') return;
         
         e.preventDefault();
-        window.location.hash = targetId;
+        if (window.location.hash === targetId) {
+          // Mesmo endereço não dispara "hashchange": refaz a navegação (rolar até o formulário etc.)
+          window.dispatchEvent(new HashChangeEvent('hashchange'));
+        } else {
+          window.location.hash = targetId;
+        }
       });
     });
 
