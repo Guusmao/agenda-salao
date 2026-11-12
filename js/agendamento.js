@@ -393,7 +393,7 @@
 
       // Success
       const gCalUrl = generateGoogleCalendarUrl({ servico, nome, telefone, data, horario });
-      showToast(`✅ Agendamento confirmado! <a href="${gCalUrl}" target="_blank" style="color: var(--accent-light); font-weight: bold; text-decoration: underline; margin-left: 5px;">Adicionar ao Google Agenda</a>`, 'success', 8000);
+      mostrarSinal({ servico, nome, data, horario, gCalUrl });
 
       // Reset form
       form.reset();
@@ -410,6 +410,44 @@
     }
 
     setLoading(false);
+  }
+
+  // --- Sinal pelo Pix: a cliente paga na chave do salão e manda o comprovante ---
+  function mostrarSinal(ag) {
+    const valor = CFG.reais(CFG.valorSinal != null ? CFG.valorSinal : 50);
+    const chave = CFG.chavePix || '';
+    const dataBR = ag.data.split('-').reverse().join('/');
+    const zap = String(CFG.whatsappSalao || '').replace(/\D/g, '');
+    const msg = `Olá! Acabei de agendar ${ag.servico} para ${dataBR} às ${ag.horario} (${ag.nome}). Segue o comprovante do sinal de ${valor}.`;
+    const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const horas = CFG.horasParaRemarcar != null ? CFG.horasParaRemarcar : 24;
+    const box = document.createElement('div');
+    box.className = 'sinal-overlay';
+    box.innerHTML = `
+      <div class="sinal-card" role="dialog" aria-modal="true" aria-labelledby="sinalTitulo">
+        <h3 id="sinalTitulo">Falta só o <span class="gold">sinal</span></h3>
+        <p>Seu horário de <strong>${esc(ag.servico)}</strong> em <strong>${esc(dataBR)} às ${esc(ag.horario)}</strong> está reservado.
+           Para confirmar, pague o sinal de <strong>${esc(valor)}</strong> pelo Pix. Ele é descontado do valor do serviço.</p>
+        ${chave ? `
+        <div class="sinal-chave">
+          <span>Chave Pix</span>
+          <code>${esc(chave)}</code>
+          <button type="button" class="btn btn-outline btn-sm" id="sinalCopiar">Copiar chave</button>
+        </div>` : '<p class="sinal-aviso">O salão vai te mandar a chave Pix pelo WhatsApp.</p>'}
+        ${zap ? `<a class="btn btn-primary" id="sinalZap" target="_blank" rel="noopener" href="https://wa.me/55${zap}?text=${encodeURIComponent(msg)}">Enviar comprovante no WhatsApp</a>` : ''}
+        <p class="sinal-regra">Remarcação até ${horas}h antes do horário. Depois disso, o sinal não é devolvido.</p>
+        <div class="sinal-acoes">
+          <a href="${ag.gCalUrl}" target="_blank" rel="noopener">Adicionar ao Google Agenda</a>
+          <button type="button" class="btn btn-outline btn-sm" id="sinalFechar">Fechar</button>
+        </div>
+      </div>`;
+    document.body.appendChild(box);
+    const copiar = box.querySelector('#sinalCopiar');
+    if (copiar) copiar.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(chave); copiar.textContent = 'Copiada!'; }
+      catch (e) { copiar.textContent = 'Selecione e copie'; }
+    });
+    box.querySelector('#sinalFechar').addEventListener('click', () => box.remove());
   }
 
   // --- Loading state ---

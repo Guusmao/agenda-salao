@@ -366,7 +366,7 @@
                 <div class="crm-column" data-status="agendado">
                   <div class="crm-column-header">
                     <span class="dot dot-agendado"></span>
-                    Agendados
+                    Aguardando sinal
                   </div>
                   <div class="crm-column-content" id="crm-agendado"></div>
                 </div>
@@ -375,7 +375,7 @@
                 <div class="crm-column" data-status="confirmado">
                   <div class="crm-column-header">
                     <span class="dot dot-confirmado"></span>
-                    Confirmados
+                    Sinal pago
                   </div>
                   <div class="crm-column-content" id="crm-confirmado"></div>
                 </div>
@@ -430,6 +430,10 @@
                     <label>Intervalo entre horários
                       <select class="form-input" id="fnIntervalo"><option value="15">15 min</option><option value="30">30 min</option><option value="60">1 hora</option></select>
                     </label>
+                  </div>
+                  <div class="sv-linha">
+                    <label>Chave Pix do sinal <input class="form-input" id="fnPix" placeholder="CPF, e-mail, celular ou aleatória"></label>
+                    <label>WhatsApp do salão (comprovante) <input class="form-input" id="fnWhats" placeholder="(85) 99999-9999"></label>
                   </div>
                   <div class="sv-linha">
                     <label>Valor do sinal (R$) <input class="form-input" id="fnSinal" type="number" min="0" step="1"></label>

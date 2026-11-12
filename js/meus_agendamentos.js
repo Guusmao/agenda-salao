@@ -132,9 +132,9 @@
       } else if (status === 'em_atendimento') {
         statusBadge = '<span class="badge-status badge-atendimento">Em Atendimento</span>';
       } else if (status === 'confirmado') {
-        statusBadge = '<span class="badge-status badge-confirmado">Confirmado</span>';
+        statusBadge = '<span class="badge-status badge-confirmado">Confirmado (sinal pago)</span>';
       } else {
-        statusBadge = '<span class="badge-status badge-agendado">Agendado</span>';
+        statusBadge = '<span class="badge-status badge-agendado">Aguardando sinal</span>';
       }
 
       let cancelBtnHtml = '';

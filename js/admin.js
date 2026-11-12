@@ -492,6 +492,8 @@
     document.getElementById('fnFechamento').value = c.fechamento || CFG.fechamento || '24:00';
     document.getElementById('fnIntervalo').value = String(c.intervalo_min || CFG.intervaloMinutos || 30);
     document.getElementById('fnSinal').value = c.valor_sinal != null ? Number(c.valor_sinal) : 50;
+    document.getElementById('fnPix').value = c.chave_pix || '';
+    document.getElementById('fnWhats').value = c.whatsapp || '';
     document.getElementById('fnRemarcar').value = c.horas_para_remarcar != null ? c.horas_para_remarcar : 24;
     await listarDatasExtras();
   }
@@ -540,6 +542,8 @@
       intervalo_min: Number(document.getElementById('fnIntervalo').value),
       valor_sinal: Number(document.getElementById('fnSinal').value || 0),
       horas_para_remarcar: Number(document.getElementById('fnRemarcar').value || 0),
+      chave_pix: document.getElementById('fnPix').value.trim(),
+      whatsapp: document.getElementById('fnWhats').value.trim(),
       updated_at: new Date().toISOString()
     };
     const { error } = await window.db.from('configuracoes').update(dados).eq('id', 1);
@@ -1247,7 +1251,7 @@
         </td>
         <td data-label="Data">${formatDateBR(ag.data)}</td>
         <td data-label="Horário"><strong>${escapeHTML(faixa(ag))}</strong>${vencido ? ' <span class="badge-vencido" title="Prazo vencido">VENCIDO</span>' : ''}</td>
-        <td data-label="Status"><span class="badge-status badge-${status}">${status.toUpperCase()}</span></td>
+        <td data-label="Status"><span class="badge-status badge-${status}">${({ agendado: 'AGUARDANDO SINAL', confirmado: 'SINAL PAGO' }[status] || status.replace('_', ' ').toUpperCase())}</span></td>
         <td data-label="Ações">
           <div style="display:flex; gap:5px; flex-wrap:wrap;">
             ${vencido ? `<button class="btn-action btn-confirmar-realizado" data-id="${ag.id}" title="Confirmar como Realizado">✅</button>` : ''}
@@ -1306,7 +1310,7 @@
       };
       
       const nextActionLabel = {
-        'agendado': 'Confirmar',
+        'agendado': 'Sinal recebido',
         'confirmado': 'Atender',
         'em_atendimento': 'Finalizar'
       };

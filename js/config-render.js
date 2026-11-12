@@ -113,6 +113,8 @@
     cfg.intervaloMinutos = c.intervalo_min;
     cfg.valorSinal = Number(c.valor_sinal);
     cfg.horasParaRemarcar = c.horas_para_remarcar;
+    cfg.chavePix = c.chave_pix || '';
+    cfg.whatsappSalao = c.whatsapp || '';
     cfg.funcionamento = c;
     montarHorarios();
   };
