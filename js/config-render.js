@@ -195,6 +195,14 @@
     if (cfg[chave] !== undefined) el.textContent = cfg[chave];
   });
 
+  // Logo no menu superior no lugar do texto
+  if (cfg.logoMenu) {
+    document.querySelectorAll('.navbar-brand').forEach(a => {
+      a.classList.add('navbar-brand-logo');
+      a.innerHTML = `<img src="${esc(cfg.logoMenu)}" alt="${esc(cfg.nome)}">`;
+    });
+  }
+
   const logo = document.getElementById('heroLogo');
   if (logo) {
     logo.src = cfg.logoHero;

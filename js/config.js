@@ -13,7 +13,8 @@ window.APP_CONFIG = {
   nome: 'Aline Ramos',                    // Nome completo (Google Agenda, painel)
   nomeCurto: 'Aline Ramos',               // Nome curto (rodapé e menu do admin)
   marca: 'Aline Ramos',                 // Texto do logo no menu superior
-  logoHero: 'img/logo-aline-ramos.png?v=1',     // Coloque o logo do salão em img/ e troque aqui
+  logoHero: 'img/logo-aline-ramos.png?v=1',
+  logoMenu: 'img/logo-aline-ramos.png?v=1',  // Logo no lugar do nome no menu (apague a linha para voltar ao texto)     // Coloque o logo do salão em img/ e troque aqui
   corDestaque: '#d4ab57',               // Cor dos botões, preços e detalhes (formato #rrggbb)
   tituloPagina: 'Aline Ramos | Agende seu horário',
   descricaoPagina: 'Aline Ramos, especialista em corte feminino. Agende seu horário online.',

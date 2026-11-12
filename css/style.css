@@ -2839,3 +2839,8 @@ tr.row-vencido {
 .sinal-acoes { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .sinal-acoes a { color: var(--accent-light); font-size: 0.85rem; }
 #sinalZap { text-align: center; }
+
+/* ---------- Logo no menu ---------- */
+.navbar-brand.navbar-brand-logo { background: none; animation: none; -webkit-text-fill-color: initial; display: flex; align-items: center; line-height: 0; }
+.navbar-brand-logo img { height: 64px; width: auto; display: block; }
+@media (max-width: 768px) { .navbar-brand-logo img { height: 50px; } }
