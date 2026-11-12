@@ -46,7 +46,25 @@
   }
 
   // --- Identity Integration ---
+  function atualizarSaudacao() {
+    const ola = document.getElementById('heroOla');
+    if (!ola) return;
+    const user = window.Auth && window.Auth.isLoggedIn() ? window.Auth.getUser() : null;
+    const admin = localStorage.getItem('adminAuth') === 'true';
+    const primeiro = user && user.nome ? String(user.nome).trim().split(/\s+/)[0] : '';
+    if (!primeiro || admin) { ola.hidden = true; return; }
+    ola.innerHTML = '';
+    const t = document.createElement('span');
+    t.textContent = 'Olá, ' + primeiro + '! Que bom te ver de novo.';
+    const troca = document.createElement('button');
+    troca.type = 'button'; troca.className = 'hero-ola-trocar'; troca.textContent = 'Não é você?';
+    troca.addEventListener('click', () => window.Auth.logout());
+    ola.append(t, troca);
+    ola.hidden = false;
+  }
+
   function checkAuth() {
+    atualizarSaudacao();
     if (window.Auth && window.Auth.isLoggedIn()) {
       const user = window.Auth.getUser();
       nomeInput.value = user.nome || '';
@@ -398,6 +416,10 @@
       // Reset form
       form.reset();
       CFG.marcarServico('serviceSelection', '');
+      // Guarda nome e telefone neste celular para a próxima vez (não vale para o painel)
+      if (window.Auth && !window.Auth.isLoggedIn() && localStorage.getItem('adminAuth') !== 'true') {
+        window.Auth.saveSession(nome, telefone);
+      }
       document.querySelectorAll('#proSelection .service-item').forEach(i => i.classList.remove('selected'));
       profissionalHidden.value = '';
       selectedSlot = null;
