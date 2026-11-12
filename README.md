@@ -10,7 +10,8 @@ Feito em HTML, CSS e JavaScript puro, com banco no [Neon](https://neon.com) (Pos
 
 1. Edite `js/config.js`: nome, logo, profissionais, abertura/fechamento, serviços, preços e duração.
 2. Troque o logo em `img/` (e o caminho em `logoHero`).
-3. Se for um banco separado, crie um projeto no Neon, rode `db/001_schema.sql` e troque `NEON_URL` em `js/db.js`.
+3. Crie um projeto no Neon só para o salão, ative Neon Auth e Data API, rode os arquivos de `db/` em ordem (001 a 004) e troque `NEON_URL` em `js/db.js`.
+4. Serviços, preços, comissões, dias, horários, sinal e chave Pix ficam no banco e a dona edita pelo painel.
 
 ## Acesso ao painel (`#admin`)
 
