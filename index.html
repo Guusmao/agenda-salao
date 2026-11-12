@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Aline Ramos, corte feminino. Agende seu horário online.">
   <title>Aline Ramos | Agende seu horário</title>
-  <link rel="stylesheet" href="css/style.css?v=26">
+  <link rel="stylesheet" href="css/style.css?v=27">
   <link rel="stylesheet" href="css/ui-components.css?v=14">
   <link rel="icon" href="img/favicon-48.png?v=4" type="image/png" sizes="48x48">
   <link rel="manifest" href="manifest.json?v=7">
@@ -66,17 +66,21 @@
       <h1>Sua <span class="gold">Beleza</span> no Seu Horário</h1>
       <p>Escolha o serviço e o horário pelo celular, a qualquer hora do dia. Sem esperar resposta no WhatsApp.</p>
       <div class="hero-buttons" style="flex-direction: column; align-items: center;">
-        <div style="display: flex; gap: 16px; justify-content: center;">
-          <a href="#agendamento" class="btn btn-primary">Agendar Horário</a>
-
+        <div class="hero-acoes">
+          <a href="#agendamento" class="btn btn-primary">Agendar horário</a>
+          <a href="#meus-agendamentos" class="btn btn-outline">Meus horários</a>
+          <a href="#servicos" class="btn btn-outline">Ver serviços e preços</a>
         </div>
         <button id="installBtn" class="btn btn-install" style="margin-top: 20px;">📲 Baixar Aplicativo</button>
       </div>
     </div>
   </section>
 
+</div> <!-- Fim view-home -->
+
+<div id="view-agendar" class="view" style="display: none;">
   <!-- ==================== AGENDAMENTO ==================== -->
-  <section id="agendamento">
+  <section id="agendamento" class="secao-agendar">
     <div class="container">
       <div class="section-header animate-fade-up">
         <span class="section-tag">Reserve seu horário</span>
@@ -141,7 +145,7 @@
       </div>
     </div>
   </section>
-</div> <!-- Fim view-home -->
+</div> <!-- Fim view-agendar -->
 
     <!-- SERVIÇOS VIEW -->
     <div id="servicos" class="view" style="display: none;">
@@ -588,16 +592,16 @@
   <!-- Cliente do banco (Neon), gerado com: npx esbuild (ver README) -->
   <script src="js/vendor/neon-js-0.10.2.min.js"></script>
   <!-- App Scripts -->
-  <script src="js/config.js?v=34"></script>
-  <script src="js/config-render.js?v=34"></script>
-  <script src="js/ui-components.js?v=34"></script>
-  <script src="js/db.js?v=34"></script>
-  <script src="js/auth.js?v=34"></script>
-  <script src="js/auth-ui.js?v=34"></script>
-  <script src="js/agendamento.js?v=34"></script>
-  <script src="js/meus_agendamentos.js?v=34"></script>
-  <script src="js/admin.js?v=34"></script>
-  <script src="js/router.js?v=34"></script>
+  <script src="js/config.js?v=35"></script>
+  <script src="js/config-render.js?v=35"></script>
+  <script src="js/ui-components.js?v=35"></script>
+  <script src="js/db.js?v=35"></script>
+  <script src="js/auth.js?v=35"></script>
+  <script src="js/auth-ui.js?v=35"></script>
+  <script src="js/agendamento.js?v=35"></script>
+  <script src="js/meus_agendamentos.js?v=35"></script>
+  <script src="js/admin.js?v=35"></script>
+  <script src="js/router.js?v=35"></script>
 
   <!-- Navbar scroll + mobile menu -->
   <script>

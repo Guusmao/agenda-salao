@@ -3043,3 +3043,10 @@ html.tema-claro #btnRefresh {
 /* Meus agendamentos: espaço entre o botão Buscar e o resultado */
 #resultsContainer:not(:empty) { margin-top: 28px; }
 #resultsContainer .empty-message { padding: 18px 16px; text-align: center; color: var(--text-secondary); background: rgba(var(--accent-rgb), 0.06); border: 1px dashed rgba(var(--accent-rgb), 0.3); border-radius: var(--radius-md); }
+/* Uma tela para cada menu */
+.hero-acoes { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 340px; margin: 0 auto; }
+.hero-acoes .btn { width: 100%; justify-content: center; }
+.hero-buttons #installBtn { width: 100%; max-width: 340px; }
+.secao-agendar { padding-top: 130px !important; min-height: 100vh; }
+@media (max-width: 768px) { .secao-agendar { padding-top: 110px !important; } }
+body[data-tela="view-home"] .footer { display: none; }

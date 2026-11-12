@@ -7,7 +7,7 @@
 
   const views = {
     'inicio': 'view-home',
-    'agendamento': 'view-home',
+    'agendamento': 'view-agendar',
     'servicos': 'servicos',
     'meus-agendamentos': 'meus-agendamentos',
     'admin': 'admin'
@@ -23,18 +23,11 @@
     const viewId = views[hash] || 'view-home';
 
     showView(viewId);
+    document.body.dataset.tela = viewId;
 
-    // Se a rota for interna de uma view (como #servicos dentro da home)
-    if (viewId === 'view-home' && (hash === 'agendamento')) {
-      const target = document.getElementById(hash);
-      if (target) {
-        setTimeout(() => {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
-      }
-    } else {
-      window.scrollTo(0, 0);
-    }
+    // Cada menu é uma tela: sempre começa do topo
+    window.scrollTo(0, 0);
+    setTimeout(() => window.scrollTo(0, 0), 0);
     
     // Atualizar classe active no navbar (opcional)
     updateNavbarActive(hash);
