@@ -79,6 +79,7 @@
 
     function mostrarLogin() {
       localStorage.removeItem('adminAuth');
+      localStorage.removeItem('adminNome');
       if (adminLogin) adminLogin.style.display = 'flex';
       if (adminDashboard) adminDashboard.style.display = 'none';
     }
@@ -89,6 +90,11 @@
       const { data: isAdmin, error } = await window.db.rpc('is_admin');
       if (!error && isAdmin === true) {
         localStorage.setItem('adminAuth', 'true');
+        try {
+          const { data: sess } = await window.db.auth.getSession();
+          const nome = sess && sess.user && (sess.user.name || sess.user.email);
+          if (nome) localStorage.setItem('adminNome', nome);
+        } catch (e) {}
         window.dispatchEvent(new CustomEvent('auth-changed'));
         showDashboard();
         return true;

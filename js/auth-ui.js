@@ -122,7 +122,7 @@
     if (!userProfile) return;
 
     if (isAdmin || user) {
-      const name = isAdmin ? window.APP_CONFIG.nomeCurto : user.nome;
+      const name = isAdmin ? (localStorage.getItem('adminNome') || 'Administrador') : user.nome;
       const initials = name
         ? name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
         : '?';
@@ -142,6 +142,7 @@
       document.getElementById('btnLogout').addEventListener('click', () => {
         if (isAdmin) {
           localStorage.removeItem('adminAuth');
+          localStorage.removeItem('adminNome');
           window.db.auth.signOut().catch(() => {});
         }
         window.Auth.logout();
