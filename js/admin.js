@@ -282,6 +282,7 @@
     }
 
     // --- View Toggle ---
+    ligarMenuPainel();
     btnViewTable.addEventListener('click', () => switchView('table'));
     btnViewCRM.addEventListener('click', () => switchView('crm'));
     btnViewCancelled.addEventListener('click', () => switchView('cancelled'));
@@ -441,8 +442,44 @@
     }
   }
 
+  const NOMES_SECAO = { table: 'Agenda', crm: 'Quadro CRM', cancelled: 'Cancelados', clientes: 'Clientes', servicos: 'Serviços e preços', funcionamento: 'Funcionamento' };
+
+  // Menu lateral do painel (gaveta no celular) e menu de Ações
+  function ligarMenuPainel() {
+    const dash = document.getElementById('adminDashboard');
+    const abrir = document.getElementById('btnAbrirSidenav');
+    const fechar = document.getElementById('btnFecharSidenav');
+    const fundo = document.getElementById('adminSidenavFundo');
+    const setAberto = (v) => { if (dash) dash.classList.toggle('sidenav-aberta', v); };
+    if (abrir) abrir.addEventListener('click', () => setAberto(true));
+    if (fechar) fechar.addEventListener('click', () => setAberto(false));
+    if (fundo) fundo.addEventListener('click', () => setAberto(false));
+    document.querySelectorAll('.admin-sidenav .btn-toggle').forEach((b) =>
+      b.addEventListener('click', () => { setAberto(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }));
+
+    const btnAcoes = document.getElementById('btnAcoes');
+    const menuAcoes = document.getElementById('adminAcoesMenu');
+    if (btnAcoes && menuAcoes) {
+      const setMenu = (v) => { menuAcoes.classList.toggle('aberto', v); btnAcoes.setAttribute('aria-expanded', v ? 'true' : 'false'); };
+      btnAcoes.addEventListener('click', (e) => { e.stopPropagation(); setMenu(!menuAcoes.classList.contains('aberto')); });
+      menuAcoes.addEventListener('click', (e) => { if (e.target.closest('button')) setMenu(false); });
+      document.addEventListener('click', (e) => { if (!e.target.closest('.admin-acoes')) setMenu(false); });
+    }
+    const mais = document.getElementById('btnStatsMais');
+    const stats = document.querySelector('.admin-stats');
+    if (mais && stats) mais.addEventListener('click', () => {
+      const todos = stats.classList.toggle('todos');
+      mais.textContent = todos ? 'Ver menos números ▴' : 'Ver mais números ▾';
+    });
+    if (dash) dash.dataset.view = 'table';
+  }
+
   function switchView(view) {
     if (!tableView || !crmView || !cancelledView) return;
+    const dash = document.getElementById('adminDashboard');
+    if (dash) dash.dataset.view = view;
+    const rotulo = document.getElementById('adminSecaoAtual');
+    if (rotulo) rotulo.textContent = NOMES_SECAO[view] || 'Agenda';
 
     // Reset buttons
     [btnViewTable, btnViewCRM, btnViewCancelled, btnViewClientes, btnViewServicos, btnViewFuncionamento].forEach(btn => {

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Agende seu horário online: cabelo, unhas, sobrancelha e muito mais.">
   <title>Agendaí Beauty | Agende seu horário</title>
-  <link rel="stylesheet" href="css/style.css?v=14">
+  <link rel="stylesheet" href="css/style.css?v=15">
   <link rel="stylesheet" href="css/ui-components.css?v=14">
   <link rel="icon" href="img/favicon-48.png?v=4" type="image/png" sizes="48x48">
   <link rel="manifest" href="manifest.json?v=6">
@@ -248,8 +248,44 @@
         </div>
         <div class="admin-content">
           <div class="container">
+            <div class="admin-layout">
+            <aside class="admin-sidenav" id="adminSidenav" aria-label="Seções do painel">
+              <div class="admin-sidenav-topo">
+                <span>Menu do painel</span>
+                <button type="button" class="admin-sidenav-fechar" id="btnFecharSidenav" aria-label="Fechar menu">&times;</button>
+              </div>
+              <nav class="admin-view-toggle">
+                <button class="btn-toggle active" id="btnViewTable"><span class="icon">📅</span> Agenda</button>
+                <button class="btn-toggle" id="btnViewCRM"><span class="icon">📊</span> Quadro CRM</button>
+                <button class="btn-toggle" id="btnViewClientes"><span class="icon">👩</span> Clientes</button>
+                <button class="btn-toggle" id="btnViewServicos"><span class="icon">✂️</span> Serviços e preços</button>
+                <button class="btn-toggle" id="btnViewFuncionamento"><span class="icon">🗓️</span> Funcionamento</button>
+                <button class="btn-toggle" id="btnViewCancelled"><span class="icon">🚫</span> Cancelados</button>
+              </nav>
+            </aside>
+            <div class="admin-sidenav-fundo" id="adminSidenavFundo"></div>
+            <div class="admin-main">
+            <button type="button" class="admin-menu-btn" id="btnAbrirSidenav" aria-label="Abrir menu do painel">
+              <span class="admin-menu-icone">☰</span> <span id="adminSecaoAtual">Agenda</span> <span class="admin-menu-seta">▾</span>
+            </button>
             <!-- Stats -->
             <div class="admin-stats">
+              <div class="stat-card">
+                <div class="stat-number" id="statHoje">0</div>
+                <div class="stat-label">Agendamentos Hoje</div>
+              </div>
+              <div class="stat-card agendado">
+                <div class="stat-number" id="statAgendadosMes">0</div>
+                <div class="stat-label">Agendamentos (Mês)</div>
+              </div>
+              <div class="stat-card realizado">
+                <div class="stat-number" id="statRealizadosMes">0</div>
+                <div class="stat-label">Realizados (Mês)</div>
+              </div>
+              <div class="stat-card faturamento">
+                <div class="stat-number" id="statFaturamento">R$ 0</div>
+                <div class="stat-label">Faturamento Total</div>
+              </div>
               <div class="stat-card agendado" id="cardAgendadosTotal" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" title="Clique para ver todos os agendamentos solicitados">
                 <div class="stat-number" id="statAgendados">0</div>
                 <div class="stat-label">Agendados (Total)</div>
@@ -262,61 +298,30 @@
                 <div class="stat-number" id="statCancelados">0</div>
                 <div class="stat-label">Cancelados (Total)</div>
               </div>
-              <div class="stat-card">
-                <div class="stat-number" id="statHoje">0</div>
-                <div class="stat-label">Agendamentos Hoje</div>
-              </div>
-              <div class="stat-card realizado">
-                <div class="stat-number" id="statRealizadosMes">0</div>
-                <div class="stat-label">Realizados (Mês)</div>
-              </div>
-              <div class="stat-card agendado">
-                <div class="stat-number" id="statAgendadosMes">0</div>
-                <div class="stat-label">Agendamentos (Mês)</div>
-              </div>
               <div class="stat-card cancelado">
                 <div class="stat-number" id="statCanceladosMes">0</div>
                 <div class="stat-label">Cancelados (Mês)</div>
               </div>
-              <div class="stat-card faturamento">
-                <div class="stat-number" id="statFaturamento">R$ 0</div>
-                <div class="stat-label">Faturamento Total</div>
-              </div>
             </div>
-            <!-- View Toggle -->
-            <div class="admin-view-toggle" style="margin-bottom: 20px; display: flex; gap: 12px; border-bottom: 1px solid rgba(var(--ink-rgb),0.1); padding-bottom: 20px;">
-              <button class="btn-toggle active" id="btnViewTable">
-                <span class="icon">📋</span> Tabela de Agendamentos
-              </button>
-              <button class="btn-toggle" id="btnViewCRM">
-                <span class="icon">📊</span> Quadro CRM (Fluxo)
-              </button>
-              <button class="btn-toggle" id="btnViewCancelled">
-                <span class="icon">🚫</span> Cancelados
-              </button>
-              <button class="btn-toggle" id="btnViewClientes">
-                <span class="icon">👩</span> Clientes
-              </button>
-              <button class="btn-toggle" id="btnViewServicos">
-                <span class="icon">✂️</span> Serviços e preços
-              </button>
-              <button class="btn-toggle" id="btnViewFuncionamento">
-                <span class="icon">🗓️</span> Funcionamento
-              </button>
-            </div>
-
+            <button type="button" class="admin-stats-mais" id="btnStatsMais">Ver mais números ▾</button>
             <!-- Toolbar -->
             <div class="admin-toolbar">
               <input type="date" id="filtroData" class="form-input" title="Filtrar por data">
               <button class="btn btn-outline btn-sm" id="btnLimparFiltro">Limpar Filtro</button>
               <button class="btn btn-primary btn-sm" id="btnRefresh">↻ Atualizar</button>
+              <button class="btn btn-success btn-sm" id="btnNovaReserva">➕ Nova reserva</button>
+              <div class="admin-acoes">
+                <button type="button" class="btn btn-outline btn-sm admin-acoes-btn" id="btnAcoes" aria-expanded="false">⚙️ Ações ▾</button>
+                <div class="admin-acoes-menu" id="adminAcoesMenu">
               <button class="btn btn-danger btn-sm" id="btnCancelarDia">🚫 Cancelar Dia</button>
               <button class="btn btn-lock btn-sm" id="btnBloquearDia">🔒 Bloquear Dia</button>
-              <button class="btn btn-warning btn-sm" id="btnBloquearHorario" style="background-color: #f39c12; border-color: #e67e22; color: white;">🚫 Bloquear Horário</button>
-              <button class="btn btn-success btn-sm" id="btnNovaReserva">➕ Nova Reserva</button>
-              <button class="btn btn-outline btn-sm" id="btnTestNotify" style="border-color: var(--accent); color: var(--accent);">🔔 Testar Notificação</button>
+              <button class="btn btn-warning btn-sm" id="btnBloquearHorario">🚫 Bloquear Horário</button>
+              <button class="btn btn-outline btn-sm" id="btnTestNotify">🔔 Testar Notificação</button>
               <button class="btn btn-confirmar-vencidos btn-sm" id="btnConfirmarVencidos">✅ Confirmar Vencidos</button>
-              <button class="btn btn-danger btn-sm" id="btnLimparDados" style="margin-left: auto;">🧹 Limpar Todos os Dados</button>
+              <hr class="admin-acoes-sep">
+              <button class="btn btn-danger btn-sm" id="btnLimparDados">🧹 Limpar Todos os Dados</button>
+                </div>
+              </div>
             </div>
             <div class="dia-bloqueado-badge" id="diaBloqueadoBadge" style="display:none;">
               <span class="badge-locked-icon">🔒</span>
@@ -470,6 +475,7 @@
               <div class="clientes-lista" id="clientesLista"></div>
             </div>
 
+          </div></div><!-- fim admin-main / admin-layout -->
           </div>
         </div>
       </div>
@@ -584,16 +590,16 @@
   <!-- Cliente do banco (Neon), gerado com: npx esbuild (ver README) -->
   <script src="js/vendor/neon-js-0.10.2.min.js"></script>
   <!-- App Scripts -->
-  <script src="js/config.js?v=26"></script>
-  <script src="js/config-render.js?v=26"></script>
-  <script src="js/ui-components.js?v=26"></script>
-  <script src="js/db.js?v=26"></script>
-  <script src="js/auth.js?v=26"></script>
-  <script src="js/auth-ui.js?v=26"></script>
-  <script src="js/agendamento.js?v=26"></script>
-  <script src="js/meus_agendamentos.js?v=26"></script>
-  <script src="js/admin.js?v=26"></script>
-  <script src="js/router.js?v=26"></script>
+  <script src="js/config.js?v=27"></script>
+  <script src="js/config-render.js?v=27"></script>
+  <script src="js/ui-components.js?v=27"></script>
+  <script src="js/db.js?v=27"></script>
+  <script src="js/auth.js?v=27"></script>
+  <script src="js/auth-ui.js?v=27"></script>
+  <script src="js/agendamento.js?v=27"></script>
+  <script src="js/meus_agendamentos.js?v=27"></script>
+  <script src="js/admin.js?v=27"></script>
+  <script src="js/router.js?v=27"></script>
 
   <!-- Navbar scroll + mobile menu -->
   <script>
