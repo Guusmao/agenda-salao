@@ -3040,3 +3040,6 @@ html.tema-claro #btnRefresh {
 .btn-login-trigger:hover { color: #fff; background: var(--gold-dark); }
 .btn-login-trigger:hover .icon { color: #fff; }
 .btn-logout { width: auto; height: 28px; padding: 0 12px; border-radius: 50px; font-size: 0.78rem; font-weight: 700; font-family: var(--font-heading); }
+/* Meus agendamentos: espaço entre o botão Buscar e o resultado */
+#resultsContainer:not(:empty) { margin-top: 28px; }
+#resultsContainer .empty-message { padding: 18px 16px; text-align: center; color: var(--text-secondary); background: rgba(var(--accent-rgb), 0.06); border: 1px dashed rgba(var(--accent-rgb), 0.3); border-radius: var(--radius-md); }

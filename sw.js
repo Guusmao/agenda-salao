@@ -3,7 +3,7 @@
 // Versão com suporte a Push Notifications
 // ==========================================
 
-const CACHE_NAME = 'salao-cache-v16';
+const CACHE_NAME = 'salao-cache-v17';
 const urlsToCache = [
   './',
   './index.html',
