@@ -134,7 +134,7 @@
           <div class="user-avatar">${initials}</div>
           <span class="user-name" title="${name}">${name.split(' ')[0]}</span>${roleBadge}
           <button class="btn-logout" id="btnLogout" title="Sair">
-            ✕
+            Sair
           </button>
         </div>
       `;
@@ -161,7 +161,7 @@
               <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
             </svg>
           </span> 
-          <span class="text">Identificar-se</span>
+          <span class="text">Entrar</span>
         </button>
       `;
       document.getElementById('btnLoginTrigger').addEventListener('click', openLoginModal);

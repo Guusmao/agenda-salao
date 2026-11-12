@@ -3030,3 +3030,13 @@ html.tema-claro #btnRefresh {
 @media (max-width: 768px) { .hero-content .hero-ola { font-size: 1.4rem; } }
 .hero-ola-sub { font-family: var(--font-body, inherit); font-size: 1rem; font-weight: 500; color: var(--text-secondary); }
 #installBtn, .btn-install, .btn-install:hover { color: #fff !important; }
+/* Botão Entrar sempre com texto, também no celular */
+@media (max-width: 480px) {
+  .btn-login-trigger { padding: 9px 16px; border-radius: 50px; gap: 6px; }
+  .btn-login-trigger .text { display: inline; font-size: 0.85rem; }
+}
+.btn-login-trigger { background: var(--gold-primary); color: #fff; border-color: var(--gold-primary); font-weight: 700; }
+.btn-login-trigger .icon { color: #fff; }
+.btn-login-trigger:hover { color: #fff; background: var(--gold-dark); }
+.btn-login-trigger:hover .icon { color: #fff; }
+.btn-logout { width: auto; height: 28px; padding: 0 12px; border-radius: 50px; font-size: 0.78rem; font-weight: 700; font-family: var(--font-heading); }
