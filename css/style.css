@@ -3113,3 +3113,26 @@ body[data-tela="view-home"] .footer { display: none; }
 .aux-row.inativa .form-input { opacity: 0.55; }
 .aux-ativa { display: flex; align-items: center; gap: 4px; font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap; }
 .aux-nova { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 10px; }
+
+/* Menu de sanduíche também no computador (igual ao celular) */
+@media (min-width: 769px) {
+  .navbar-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex: 1; }
+  .menu-toggle { display: flex; z-index: 1001; order: 1; }
+  .navbar-links {
+    display: flex; flex-direction: column; position: absolute;
+    top: calc(100% + 12px); right: 24px; left: auto;
+    transform: translateY(-10px) scale(0.97); transform-origin: top right;
+    width: 300px; background: var(--nav-bg-solid);
+    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--border-gold); border-radius: var(--radius-lg);
+    padding: 12px 0; gap: 0; z-index: 999;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    opacity: 0; pointer-events: none; transition: all 0.25s ease;
+  }
+  .navbar-links.active { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  .navbar-links a { font-size: 0.95rem; padding: 13px 22px; width: 100%; display: block; border-bottom: 1px solid var(--border-color); }
+  .navbar-links a:last-child { border-bottom: none; }
+  .navbar-links a::after { display: none; }
+  .navbar-links .install-link { border: none; border-radius: 0; background: none; padding: 13px 22px; }
+  .user-info-pill .user-name, .user-info-pill .user-name + span { display: inline; }
+}
